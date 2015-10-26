@@ -79,4 +79,78 @@
 	)
 )
 
+;; 1.11
+(cons '(1 2 3) '((3 5) (8)))
+
+;; 1.12
+;; so funciona 1 vez, mas tem exemplo de uso de duas expressoes no if
+;; (let ((comp 0))
+;; (defun comprimento(lst)
+;; 		(if (null lst)
+;; 			(setf comp (+ comp 0))
+;; 			(progn
+;; 				(comprimento (rest lst))
+;; 				(setf comp (1+ comp))
+;; 			)
+;; 		)
+;; )
+;; )
+
+;; 1.12
+(defun comprimento(lst)
+	(let ((comp 0))
+		(if (null lst)
+			0
+			(progn
+				1
+				(+ comp (comprimento (rest lst)))
+				
+			)
+		)
+	)
+)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
