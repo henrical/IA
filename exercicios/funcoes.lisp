@@ -1,3 +1,31 @@
+;; função inverte lista
+(defun invert-lst (lst)
+	"inverts a list"
+	(if (null lst)
+		()
+		(append (invert-lst (rest lst)) (list (first lst)))
+	)
+)
+
+;;substitui ocorrencias do 1º elemento pelo 2º na lista
+(defun subs (elem1 elem2 lst)
+	(cond (
+			(null lst)
+			()
+		)
+		
+		(
+			(equal (first lst) elem1)
+			(cons elem2 (subs elem1 elem2 (rest lst)))
+		)
+		
+		(
+			t
+			(cons (first lst) (subs elem1 elem2 (rest lst)))
+		)
+	)
+)
+
 ;;  1.3
 (defun findmax(el1 el2)
 	(if (> el1 el2)
@@ -83,32 +111,20 @@
 (cons '(1 2 3) '((3 5) (8)))
 
 ;; 1.12
-;; so funciona 1 vez, mas tem exemplo de uso de duas expressoes no if
-;; (let ((comp 0))
-;; (defun comprimento(lst)
-;; 		(if (null lst)
-;; 			(setf comp (+ comp 0))
-;; 			(progn
-;; 				(comprimento (rest lst))
-;; 				(setf comp (1+ comp))
-;; 			)
-;; 		)
-;; )
-;; )
-
-;; 1.12
 (defun comprimento(lst)
 	(let ((comp 0))
-		(if (null lst)
-			0
-			(progn
-				1
-				(+ comp (comprimento (rest lst)))
-				
-			)
+		(loop for x in lst
+			do (incf comp)
 		)
+	comp
 	)
 )
+
+
+
+
+
+
 
 
 
