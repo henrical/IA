@@ -1,31 +1,3 @@
-;; função inverte lista
-(defun invert-lst (lst)
-	"inverts a list"
-	(if (null lst)
-		()
-		(append (invert-lst (rest lst)) (list (first lst)))
-	)
-)
-
-;;substitui ocorrencias do 1º elemento pelo 2º na lista
-(defun subs (elem1 elem2 lst)
-	(cond (
-			(null lst)
-			()
-		)
-		
-		(
-			(equal (first lst) elem1)
-			(cons elem2 (subs elem1 elem2 (rest lst)))
-		)
-		
-		(
-			t
-			(cons (first lst) (subs elem1 elem2 (rest lst)))
-		)
-	)
-)
-
 ;;  1.3
 (defun findmax(el1 el2)
 	(if (> el1 el2)
