@@ -92,8 +92,60 @@
 	)
 )
 
+;;1.13
+(defun junta-obvio(lst1 lst2)
+	(append lst1 lst2) 
+)
 
+(defun junta-recurs (lst1 lst2)
+	(if (null lst1)
+		lst2
+		(cons (first lst1) (junta (rest lst1) lst2))
+	)
+)
 
+;;1.14
+(defun inverte(lst1)
+	(if (null lst1)
+		()
+		(append (inverte (rest lst1)) (list (first lst1)))
+	)
+)
+
+;;1.15
+(defun list-contains(lst elem)
+	(if (null lst)
+		()
+		(if (eq (first lst) elem)
+			t
+			(list-contains (rest lst) elem)
+		)
+	)
+)
+
+;;1.16
+(defun list-remove(elem lst)
+	(if (null lst)
+		()
+		(if (eq elem (first lst))
+			(list-remove elem (rest lst))
+			(cons (first lst) (list-remove elem (rest lst)))
+		)
+	)
+)
+
+;;1.17
+(defun list-count (lst elem)
+	(let ((n 0))
+		(dolist (var lst)
+			(when (eq var elem)
+				(incf n)
+			)
+		)
+		n
+	)
+
+)
 
 
 
