@@ -100,7 +100,7 @@
 (defun junta-recurs (lst1 lst2)
 	(if (null lst1)
 		lst2
-		(cons (first lst1) (junta (rest lst1) lst2))
+		(cons (first lst1) (junta-recurs (rest lst1) lst2))
 	)
 )
 
@@ -145,6 +145,31 @@
 		n
 	)
 
+)
+
+;;1.25
+(defun mapeia-obvio (predicate lst)
+	(mapcar predicate lst)
+)
+
+(defun mapeia(predicate lst)
+	(if (null lst)
+		()
+		(cons (funcall predicate (first lst)) (mapeia predicate (rest lst)))
+	)
+)
+
+;; (mapeia #'1+ '(1 2 3))
+
+;;1.26
+(defun remove-se (predicate lst)
+	(if (null lst)
+		()
+		(if (funcall predicate (first lst))
+			(remove-se predicate (rest lst))
+			(cons (first lst) (remove-se predicate (rest lst)))
+		)
+	)
 )
 
 
