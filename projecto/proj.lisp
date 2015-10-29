@@ -13,7 +13,7 @@
 ;;################### TIPO TABULEIRO ###################
 ;;######################################################
 (defun cria-tabuleiro ()
-	(make-array '(18 10) : element-type 'bit : initial-element 0)
+	(make-array '(NUM-LINES NUM-COLLUMNS) : element-type 'bit : initial-element 0)
 )
   
   
@@ -34,6 +34,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Returns true if position (num-linha, num-coluna) 
 ;; of 'tabuleiro' is filled.
+;; TESTADO
 
 (defun tabuleiro-preenchido-p ( tabuleiro num-linha num-coluna)
   (= (aref tabuleiro num-linha num-coluna) 1)
@@ -44,13 +45,17 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Returns the value of the highest filled position of 
 ;; 'tabuleiro'.
+;; TESTADO
 
 (defun tabuleiro-altura-coluna ( tabuleiro num-coluna)
-  (let ((num-linha 0))
-    (loop (if ( and (= (aref tabuleiro num-linha num-coluna) 1 ) (< num-linha 18))
-               (incf num-linha)
-             (return num-linha))
-    )
+  (let ((max-altura 0))
+	(dotimes (line (1- NUM-LINES))
+		(when (= (aref tabuleiro line num-coluna) 1)
+			(setf max-altura line)
+		)
+	)
+	#|return|#
+	max-altura 
   )
 )
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -58,21 +63,25 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Returns true if line number 'num-linha' of 'tabuleiro' is
 ;; completely filled.
+;; TESTADO
 
 (defun tabuleiro-linha-completa-p ( tabuleiro num-linha)
-  (let ((num-coluna 0))
-    (loop 	(if ( and (= (aref tabuleiro num-linha num-coluna) 1 ) (< num-coluna 10))
-               (if (= num-coluna 9) (return t))
-             (incf num-coluna)))
-    NIL
-  )
+	(let ((result t))
+		(dotimes (collumn (1- NUM-COLLUMNS))
+			(when (= (aref tabuleiro num-linha collumn) 0)
+				(setf result nil)
+			)
+		)	
+	#|return|#
+	result
+	)
 )
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Fills position given by (num-linha, num-coluna)
-;;
+;; TESTADO
 
 (defun tabuleiro-preenche! (tabuleiro num-linha num-coluna)
 	(if (and (>= num-linha 0) (< num-linha 18) (>= num-coluna 0) (< num-coluna 10))  
