@@ -3,8 +3,9 @@
 (defconstant NUM-LINES 18)
 (defconstant NUM-COLLUMNS 10)
 
-(defconstant POSITION-FILLED 1)
-(defconstant POSITION-EMPTY 0)
+;; So para o desenvolvimento, depois muda-se para 1 e 0.
+(defconstant POSITION-FILLED "x")
+(defconstant POSITION-EMPTY "_")
 
 
 
@@ -13,7 +14,7 @@
 ;;################### TIPO TABULEIRO ###################
 ;;######################################################
 (defun cria-tabuleiro ()
-	(make-array '(NUM-LINES NUM-COLLUMNS) : element-type 'bit : initial-element 0)
+	(make-array (list NUM-LINES NUM-COLLUMNS) #|: element-type 'bit|# : initial-element POSITION-EMPTY)
 )
   
   
@@ -32,16 +33,18 @@
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Returns true if position (num-linha, num-coluna) 
 ;; of 'tabuleiro' is filled.
 ;; TESTADO
 
 (defun tabuleiro-preenchido-p ( tabuleiro num-linha num-coluna)
-  (= (aref tabuleiro num-linha num-coluna) 1)
+  (eq (aref tabuleiro num-linha num-coluna) POSITION-FILLED)
 )
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   
-  
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Returns the value of the highest filled position of 
 ;; 'tabuleiro'.
@@ -50,7 +53,7 @@
 (defun tabuleiro-altura-coluna ( tabuleiro num-coluna)
   (let ((max-altura 0))
 	(dotimes (line (1- NUM-LINES))
-		(when (= (aref tabuleiro line num-coluna) 1)
+		(when (eq (aref tabuleiro line num-coluna) POSITION-FILLED)
 			(setf max-altura line)
 		)
 	)
@@ -60,6 +63,8 @@
 )
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Returns true if line number 'num-linha' of 'tabuleiro' is
 ;; completely filled.
@@ -68,7 +73,7 @@
 (defun tabuleiro-linha-completa-p ( tabuleiro num-linha)
 	(let ((result t))
 		(dotimes (collumn (1- NUM-COLLUMNS))
-			(when (= (aref tabuleiro num-linha collumn) 0)
+			(when (eq (aref tabuleiro num-linha collumn) POSITION-EMPTY)
 				(setf result nil)
 			)
 		)	
@@ -79,6 +84,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Fills position given by (num-linha, num-coluna)
 ;; TESTADO
@@ -94,6 +100,7 @@
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Returns true if any position in collumn number 17 is filled.
 ;;
 
@@ -104,16 +111,48 @@
             (if (= num-coluna 9) (return NIL))
 		(incf num-coluna))
 	)
-      t ;;retorna true
+	;; Return:
+      t 
     )
   )
 )
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
-
-;; needs to be re-written
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Returns true if both 'tabuleiro' parameters are equal.
 ;;
+
+(defun tabuleiros-iguais-p (tab1 tab2)
+	(let ((result t))
+		(block loop-block
+			;; Loop through all positions in 2D array;
+			(loop for x from 0 to (1- NUM-LINES)
+				do 
+				(loop for y from 0 to (1- NUM-COLLUMNS)
+					do
+					;; If position (x,y) is equal in both tables;
+					(if (eq (aref tab1 x y) (aref tab2 x y))
+						;; Do nothing;
+						()
+						;; Else, execute several instructions;
+						(progn 
+							;; Set 'result' to false;
+							(setf result nil)
+							;; Exit loop;
+							(return-from loop-block)
+						)
+					)
+				)
+			)
+		)
+		;;Return:
+		result
+	)
+)
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 ;; (defun tabuleiros_iguais_p ( tabuleiro1 tabuleiro2) 
 ;;   (let ((num_linha 0))
 ;;   (let ((num_coluna 0))
