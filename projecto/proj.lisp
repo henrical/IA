@@ -23,10 +23,12 @@
 ;; TESTADO
 
 (defun copia-tabuleiro (tabuleiro)
-  (let ((tabuleiro-novo (make-array (list NUM-LINES NUM-COLLUMNS) : element-type 'bit)))
-	(dotimes (line (1- NUM-LINES))
-		(dotimes (collumn (1- NUM-COLLUMNS))
-			(setf (aref tabuleiro-novo line collumn) (aref tabuleiro line collumn))
+  (let ((tabuleiro-novo (make-array (list NUM-LINES NUM-COLLUMNS) : initial-element POSITION-EMPTY) ))
+	(dotimes (line NUM-LINES)
+		(dotimes (collumn NUM-COLLUMNS)
+			(when (tabuleiro-preenchido-p tabuleiro line collumn)
+				(tabuleiro-preenche! tabuleiro-novo line collumn)
+			)
 		)
 	)
 	tabuleiro-novo
@@ -57,7 +59,7 @@
 
 (defun tabuleiro-altura-coluna ( tabuleiro num-coluna)
 	(let ((max-altura 0))
-		(dotimes (line (1- NUM-LINES))
+		(dotimes (line NUM-LINES)
 			(when (eq (aref tabuleiro line num-coluna) POSITION-FILLED)
 				(setf max-altura line)
 			)
@@ -78,7 +80,7 @@
 
 (defun tabuleiro-linha-completa-p ( tabuleiro num-linha)
 	(let ((result t))
-		(dotimes (collumn (1- NUM-COLLUMNS))
+		(dotimes (collumn NUM-COLLUMNS)
 			(when (eq (aref tabuleiro num-linha collumn) POSITION-EMPTY)
 				(setf result nil)
 			)
@@ -152,6 +154,10 @@
 							;; Set 'result' to false;
 							(setf result nil)
 							;; Exit loop;
+;; 							(print result)
+;; 							(print x)
+;; 							(print y)
+;; 							(print "########")
 							(return-from loop-block)
 						)
 					)
