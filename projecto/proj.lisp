@@ -3,7 +3,6 @@
 (defconstant NUM-LINES 18)
 (defconstant NUM-COLLUMNS 10)
 
-;; So para o desenvolvimento, depois muda-se para 1 e 0.
 (defconstant POSITION-FILLED 1)
 (defconstant POSITION-EMPTY 0)
 
@@ -12,7 +11,7 @@
 ;;################### TIPO TABULEIRO ###################
 ;;######################################################
 (defun cria-tabuleiro ()
-	(make-array (list NUM-LINES NUM-COLLUMNS) #|: element-type 'bit|# : initial-element POSITION-EMPTY)
+	(make-array (list NUM-LINES NUM-COLLUMNS) :element-type 'bit :initial-element POSITION-EMPTY)
 )
   
 
@@ -23,7 +22,7 @@
 ;; TESTADO
 
 (defun copia-tabuleiro (tabuleiro)
-  (let ((tabuleiro-novo (make-array (list NUM-LINES NUM-COLLUMNS) : initial-element POSITION-EMPTY) ))
+  (let ((tabuleiro-novo (make-array (list NUM-LINES NUM-COLLUMNS) :initial-element POSITION-EMPTY) ))
 	(dotimes (line NUM-LINES)
 		(dotimes (collumn NUM-COLLUMNS)
 			(when (tabuleiro-preenchido-p tabuleiro line collumn)
@@ -64,7 +63,7 @@
 				(setf max-altura line)
 			)
 		)
-		;;return
+		;; Return:
 		max-altura 
 	)
 )
@@ -85,7 +84,7 @@
 				(setf result nil)
 			)
 		)	
-	;;return
+	;; Return:
 	result
 	)
 )
@@ -101,7 +100,7 @@
 (defun tabuleiro-preenche! (tabuleiro num-linha num-coluna)
 	(if (and (>= num-linha 0) (< num-linha 18) (>= num-coluna 0) (< num-coluna 10))  
 		(setf (aref tabuleiro num-linha num-coluna) POSITION-FILLED)
-		() ;;returns NIL
+		() 
 	)
 )
 
@@ -154,10 +153,6 @@
 							;; Set 'result' to false;
 							(setf result nil)
 							;; Exit loop;
-;; 							(print result)
-;; 							(print x)
-;; 							(print y)
-;; 							(print "########")
 							(return-from loop-block)
 						)
 					)
@@ -172,20 +167,25 @@
 
 
 
-;; (defun tabuleiro-array ( tabuleiro ) 
-;;   (setf tabuleiro_logico (make-array '(18 10))
-;;     (let (num_linha 0))
-;;     (let (num_coluna 0))
-;;     (loop 	(if  (< num_coluna 10))
-;;           (if (= aref tabuleiro num_linha num_coluna 1) 
-;;               (setf (aref tabuleiro_logico num_linha num_coluna) true ) )
-;;           (setf (aref tabuleiro_logico num_linha num_coluna) NIL )
-;;           (if (= num_coluna 9)
-;;               (if (= num_linha 17) (return tabuleiro_logico))
-;;             (let (num_coluna 0))
-;;             (incf num_linha))
-;;           (incf num_coluna)))
-;;   (return NIL))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; TABULEIRO-ARRAY
+;; Returns an array with positions filled with 'true' and 'nil'
+;; TESTADO
+
+(defun tabuleiro-array (tabuleiro) 
+	(let ((result (make-array (list NUM-LINES NUM-COLLUMNS) :initial-element nil)))
+		(dotimes (line NUM-LINES)
+			(dotimes (collumn NUM-COLLUMNS)
+				(when (tabuleiro-preenchido-p tabuleiro line collumn)
+					(setf (aref result line collumn) t)
+				)
+			)
+		)
+	result
+	)
+)
 
 ;;   
 ;;   
