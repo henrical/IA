@@ -127,7 +127,7 @@
 ;; )
 
 
-;; (defun tabuleiro_array ( tabuleiro ) 
+;; (defun tabuleiro-array ( tabuleiro ) 
 ;;   (setf tabuleiro_logico (make-array '(18 10))
 ;;     (let (num_linha 0))
 ;;     (let (num_coluna 0))
@@ -144,7 +144,7 @@
 
 ;;   
 ;;   
-;; (defun tabuleiro-to-array ( array ) 
+;; (defun array-tabuleiro( array ) 
 ;;   (setf tabuleiro_binario (make-array '(18 10))
 ;;     (let (num_linha 0))~
 ;;     (let (num_coluna 0))
@@ -164,26 +164,39 @@
 ;;###################################################          
 ;;################### TIPO ESTADO ###################
 ;;###################################################
-(defstruct estado pontos pecas_por_colocar pecas_colocadas tabuleiro)
-(make-estado :pontos NIL :pecas_por_colocar NIL :pecas_colocadas NIL :tabuleiro NIL)
-(make-estado :pontos NIL :pecas_por_colocar t :pecas_colocadas NIL :tabuleiro NIL)
-(make-estado :pontos NIL :pecas_por_colocar NIL :pecas_colocadas t :tabuleiro NIL)
-(make-estado :pontos NIL :pecas_por_colocar NIL :pecas_colocadas NIL :tabuleiro t)
+(defstruct estado pontos pecas-por-colocar pecas-colocadas tabuleiro)
+
+(make-estado :pontos NIL :pecas-por-colocar NIL :pecas-colocadas NIL :tabuleiro NIL)
+(make-estado :pontos NIL :pecas-por-colocar t :pecas-colocadas NIL :tabuleiro NIL)
+(make-estado :pontos NIL :pecas-por-colocar NIL :pecas-colocadas t :tabuleiro NIL)
+(make-estado :pontos NIL :pecas-por-colocar NIL :pecas-colocadas NIL :tabuleiro t)
 
 
 
 ;;#################################################          
 ;;################# TIPO PROBLEMA #################
 ;;#################################################
-(defstruct problema estado_inicial solucao accoes resultado custo_caminho)
-(make-problema :estado_inicial t  :solucao NIL  :accoes NIL  :resultado NIL :custo_caminho NIL)
-(make-problema :estado_inicial NIL  :solucao t  :accoes NIL  :resultado NIL :custo_caminho NIL)
-(make-problema :estado_inicial NIL  :solucao NIL  :accoes t  :resultado NIL :custo_caminho NIL)
-(make-problema :estado_inicial NIL  :solucao NIL  :accoes NIL  :resultado t :custo_caminho NIL)
-(make-problema :estado_inicial NIL  :solucao NIL  :accoes NIL  :resultado NIL :custo_caminho t)
+(defstruct problema estado-inicial solucao accoes resultado custo-caminho)
+
+(make-problema :estado-inicial t  :solucao NIL  :accoes NIL  :resultado NIL :custo-caminho NIL)
+(make-problema :estado-inicial NIL  :solucao t  :accoes NIL  :resultado NIL :custo-caminho NIL)
+(make-problema :estado-inicial NIL  :solucao NIL  :accoes t  :resultado NIL :custo-caminho NIL)
+(make-problema :estado-inicial NIL  :solucao NIL  :accoes NIL  :resultado t :custo-caminho NIL)
+(make-problema :estado-inicial NIL  :solucao NIL  :accoes NIL  :resultado NIL :custo-caminho t)
 
 
 
+;;#################################################          
+;;################### TIPO ACCAO ##################
+;;#################################################
+;; COLUNA: collumn number of leftmost piece.
+;; 
+;; PECA: 2D array with piece configuration.
+;; 		ex: ((T T)(T nil)(T nil))
 
+(defstruct accao coluna peca)
+
+(make-accao :coluna 0  :peca (make-array '(3 2) :initial-contents '((T T)(T nil)(T nil))))
+(make-accao :coluna 0  :peca (make-array (list 2 3) :initial-contents '((T nil nil)(T T T))))
 
 
