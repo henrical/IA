@@ -159,7 +159,7 @@
 				)
 			)
 		)
-		;;Return:
+		;; Return:
 		result
 	)
 )
@@ -171,6 +171,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; TABULEIRO-ARRAY
+;; Receives an array filled with 1's and 0's.
 ;; Returns an array with positions filled with 'true' and 'nil'
 ;; TESTADO
 
@@ -187,22 +188,26 @@
 	)
 )
 
-;;   
-;;   
-;; (defun array-tabuleiro( array ) 
-;;   (setf tabuleiro_binario (make-array '(18 10))
-;;     (let (num_linha 0))~
-;;     (let (num_coluna 0))
-;;     (loop 	(if  (< num_coluna 10))
-;;           (if (= aref array num_linha num_coluna T) 
-;;               (setf (aref tabuleiro_binario num_linha num_coluna) 1 ) )
-;;           (setf (aref tabuleiro_binario num_linha num_coluna) 0 )
-;;           (if (= num_coluna 9)
-;;               (if (= num_linha 17)
-;;                   (return tabuleiro_binario))
-;;             (let (num_coluna 0))
-;;             (incf num_linha))
-;;           (incf num_coluna))))
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; TABULEIRO-ARRAY
+;; Receives an array filled with logic values.
+;; Returns an array with positions filled with 1's and 0's.
+;; 
+
+(defun array-tabuleiro(array-log)
+	(let ((result (make-array (list NUM-LINES NUM-COLLUMNS) :initial-element 0)))
+		(dotimes (line NUM-LINES)
+			(dotimes (collumn NUM-COLLUMNS)
+				(when (eq (aref array-log line collumn) t)
+					(tabuleiro-preenche! result line collumn)
+				)
+			)
+		)
+	result
+	)
+)
+
 
           
           
