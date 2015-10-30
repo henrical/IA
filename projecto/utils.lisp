@@ -67,17 +67,18 @@
 ;;; funcao que recebe um estado e uma lista de accoes e executa as accoes (pela ordem recebida) sobre o tabuleiro do estado inicial,
 ;;; desenhando no ecra os varios estados do tabuleiro. Para avancar entre ecras, o utilizador deve premir a tecla "Enter".
 ;;;	retorna o total de pontos obtidos pela sequencia de accoes no tabuleiro
-(defun executa-jogadas (estado-inicial lista-accoes)
-  (let ((estado estado-inicial))
-    (do () ((or (estado-final-p estado) (null lista-accoes)))
-      (desenha-estado estado)
-      (read-char)
-      (desenha-estado estado (first lista-accoes))
-      (read-char)
-      (setf estado (resultado estado (first lista-accoes)))
-      (setf lista-accoes (rest lista-accoes)))
-    (desenha-estado estado)
-    (estado-pontos estado)))
+
+;; (defun executa-jogadas (estado-inicial lista-accoes)
+;;   (let ((estado estado-inicial))
+;;     (do () ((or (estado-final-p estado) (null lista-accoes)))
+;;       (desenha-estado estado)
+;;       (read-char)
+;;       (desenha-estado estado (first lista-accoes))
+;;       (read-char)
+;;       (setf estado (resultado estado (first lista-accoes)))
+;;       (setf lista-accoes (rest lista-accoes)))
+;;     (desenha-estado estado)
+;;     (estado-pontos estado)))
 
 ;;; desenha-estado: estado x accao (opcional) --> {}
 ;;; funcao que recebe um estado (e pode receber opcionalmente uma accao) e desenha o estado do jogo de tetris no ecra
@@ -141,4 +142,4 @@
 (dotimes (coluna 9)
   (tabuleiro-preenche! t1 1 coluna))
 (defvar e1 (make-estado :tabuleiro t1 :pecas-por-colocar '(i o j l t i)))
-(defvar p1 (formulacao-problema t1 '(i o j l t i)))
+;; (defvar p1 (formulacao-problema t1 '(i o j l t i)))

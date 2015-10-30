@@ -4,10 +4,8 @@
 (defconstant NUM-COLLUMNS 10)
 
 ;; So para o desenvolvimento, depois muda-se para 1 e 0.
-(defconstant POSITION-FILLED "x")
-(defconstant POSITION-EMPTY "_")
-
-
+(defconstant POSITION-FILLED 1)
+(defconstant POSITION-EMPTY 0)
 
 
 ;;######################################################          
@@ -17,23 +15,29 @@
 	(make-array (list NUM-LINES NUM-COLLUMNS) #|: element-type 'bit|# : initial-element POSITION-EMPTY)
 )
   
-  
-;; (defun copia_tabuleiro (tabuleiro)
-;;   (setf tabuleiro_novo (make-array '(18 10) : element-type 'bit))
-;;     (let (num_linha 0))
-;;     (let (num_coluna 0))
-;;     (loop 	(if  (< num_coluna 10))
-;;           (setf (aref tabuleiro_novo num_linha num_coluna) (aref tabuleiro num_linha num_coluna))
-;;           (if (= num_coluna 9)
-;;               (if (= num_linha 17) (return tabuleiro_novo))
-;;             (let (num_coluna 0))
-;;             (incf num_linha))
-;;           (incf num_coluna)))
-;;   (return NIL))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; COPIA-TABULEIRO
+;; Returns a copy of 'tabuleiro'
+;; TESTADO
+
+(defun copia-tabuleiro (tabuleiro)
+  (let ((tabuleiro-novo (make-array (list NUM-LINES NUM-COLLUMNS) : element-type 'bit)))
+	(dotimes (line (1- NUM-LINES))
+		(dotimes (collumn (1- NUM-COLLUMNS))
+			(setf (aref tabuleiro-novo line collumn) (aref tabuleiro line collumn))
+		)
+	)
+	tabuleiro-novo
+  )
+)
+
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; TABULEIRO-PREENCHIDO-P
 ;; Returns true if position (num-linha, num-coluna) 
 ;; of 'tabuleiro' is filled.
 ;; TESTADO
@@ -46,6 +50,7 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; TABULEIRO-ALTURA-COLUNA
 ;; Returns the value of the highest filled position of 
 ;; 'tabuleiro'.
 ;; TESTADO
@@ -66,6 +71,7 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; TABULEIRO-LINHA-COMPLETA-P
 ;; Returns true if line number 'num-linha' of 'tabuleiro' is
 ;; completely filled.
 ;; TESTADO
@@ -86,6 +92,7 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; TABULEIRO-PREENCHE!
 ;; Fills position given by (num-linha, num-coluna)
 ;; TESTADO
 
@@ -101,6 +108,7 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; TABULEIRO-TOPO-PREENCHIDO-P
 ;; Returns true if any position in collumn number 17 is filled.
 ;; TESTADO
 
@@ -123,6 +131,7 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; TABULEIROS-IGUAIS-P
 ;; Returns true if both 'tabuleiro' parameters are equal.
 ;; TESTADO
 
