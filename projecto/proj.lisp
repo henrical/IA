@@ -41,7 +41,7 @@
 (defun tabuleiro-preenchido-p ( tabuleiro num-linha num-coluna)
   (eq (aref tabuleiro num-linha num-coluna) POSITION-FILLED)
 )
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
   
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -51,17 +51,17 @@
 ;; TESTADO
 
 (defun tabuleiro-altura-coluna ( tabuleiro num-coluna)
-  (let ((max-altura 0))
-	(dotimes (line (1- NUM-LINES))
-		(when (eq (aref tabuleiro line num-coluna) POSITION-FILLED)
-			(setf max-altura line)
+	(let ((max-altura 0))
+		(dotimes (line (1- NUM-LINES))
+			(when (eq (aref tabuleiro line num-coluna) POSITION-FILLED)
+				(setf max-altura line)
+			)
 		)
+		;;return
+		max-altura 
 	)
-	;;return
-	max-altura 
-  )
 )
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -81,7 +81,7 @@
 	result
 	)
 )
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -95,34 +95,36 @@
 		() ;;returns NIL
 	)
 )
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Returns true if any position in collumn number 17 is filled.
-;;
+;; TESTADO
 
-(defun tabuleiro-topo-preenchido-p ( tabuleiro) 
-  (let ((num-coluna 0))
-    (let ((num-linha 17))
-      (loop (if (and (= (aref tabuleiro num-linha num-coluna) 0) (< num-coluna 10))
-            (if (= num-coluna 9) (return NIL))
-		(incf num-coluna))
+(defun tabuleiro-topo-preenchido-p (tabuleiro) 
+	(let ((result nil) (last-line (1- NUM-LINES)))
+		(block loop-block
+			(loop for collumn from 0 to (1- NUM-COLLUMNS)
+				do
+				(when (eq (aref tabuleiro last-line collumn) POSITION-FILLED)
+					(setf result t)
+					(return-from loop-block)
+				)
+			)
+		)
+	result
 	)
-	;; Return:
-      t 
-    )
-  )
 )
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Returns true if both 'tabuleiro' parameters are equal.
-;;
+;; TESTADO
 
 (defun tabuleiros-iguais-p (tab1 tab2)
 	(let ((result t))
@@ -153,17 +155,6 @@
 )
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;; (defun tabuleiros_iguais_p ( tabuleiro1 tabuleiro2) 
-;;   (let ((num_linha 0))
-;;   (let ((num_coluna 0))
-;;   (loop (if  (= (aref tabuleiro1 num_linha num_coluna) (aref tabuleiro2 num_linha num_coluna))
-;;             (incf num_coluna)
-;;           (if (= num_coluna 10)
-;;               (if (= num_linha 17) (return true))
-;;             (let (num_coluna 0))
-;;             (incf num_linha))))
-;;   (return NIL)
-;; )
 
 
 ;; (defun tabuleiro-array ( tabuleiro ) 
