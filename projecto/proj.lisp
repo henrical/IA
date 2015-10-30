@@ -57,7 +57,7 @@
 			(setf max-altura line)
 		)
 	)
-	#|return|#
+	;;return
 	max-altura 
   )
 )
@@ -77,7 +77,7 @@
 				(setf result nil)
 			)
 		)	
-	#|return|#
+	;;return
 	result
 	)
 )
