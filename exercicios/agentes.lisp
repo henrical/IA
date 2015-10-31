@@ -29,3 +29,28 @@
 		)
 	)
 )
+
+;; ex3
+
+(defstruct percepcao3 lixo-p toque-p)
+
+(defun agente-reflexos-simples2 (p)
+	(let ((random-num))
+		(cond ((percepcao3-lixo-p p) 'aspirar)
+			((percepcao3-toque-p p) 'rodar)
+			(t (setf random-num (random 2))
+			   (if (= random-num 0)
+				 'rodar
+				 'andar
+			   )
+					
+			)
+		)
+	)
+)
+
+
+
+
+
+
