@@ -147,6 +147,19 @@
 
 )
 
+
+;;1.21 
+(defun interseccao (lst1 lst2)
+	(if (null lst2)
+		()
+		(if (member (first lst2) lst1)
+			(cons (first lst2) (interseccao lst1 (rest lst2)))
+			(interseccao lst1 (rest lst2))
+		)
+	)
+)
+
+
 ;;1.25
 (defun mapeia-obvio (predicate lst)
 	(mapcar predicate lst)
@@ -158,8 +171,8 @@
 		(cons (funcall predicate (first lst)) (mapeia predicate (rest lst)))
 	)
 )
-
 ;; (mapeia #'1+ '(1 2 3))
+
 
 ;;1.26
 (defun remove-se (predicate lst)
@@ -169,6 +182,31 @@
 			(remove-se predicate (rest lst))
 			(cons (first lst) (remove-se predicate (rest lst)))
 		)
+	)
+)
+
+;;1.27
+(defun todos? (predicate lst)
+	(let ((result t))
+		(loop for elem in lst do
+			(when (not (funcall predicate elem))
+				(setf result nil)
+				(return)
+			)
+		)
+		result
+	)
+)
+
+;;1.29
+(defun soma-matrizes (matriz1 matriz2)
+	(let ((result (make-array (list (array-dimension matriz1 0)(array-dimension matriz1 1)))))
+		(dotimes (line (array-dimension matriz1 0))
+			(dotimes (collumn (array-dimension matriz1 1))
+				(setf (aref result line collumn) (+ (aref matriz1 line collumn) (aref matriz2 line collumn)))
+			)
+		)
+		result
 	)
 )
 
