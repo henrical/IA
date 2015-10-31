@@ -193,7 +193,7 @@
 ;; TABULEIRO-ARRAY
 ;; Receives an array filled with logic values.
 ;; Returns an array with positions filled with 1's and 0's.
-;; 
+;; TESTADO
 
 (defun array-tabuleiro(array-log)
 	(let ((result (make-array (list NUM-LINES NUM-COLLUMNS) :initial-element 0)))

@@ -1,4 +1,5 @@
 acl90express
 
+exercicios/agentes.fasl
 *.fasl
 allegro
