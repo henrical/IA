@@ -58,57 +58,6 @@
 
 
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; PECAS-IGUAIS-P
-;; Returns true if both tetris pieces are equal.
-;; POR TESTAR!!!!!!!!
-(defun pecas-iguais-p (p1 p2)
-	(let ((p1-line-num (array-dimension p1 0))
-		 (p2-line-num (array-dimension p2 0))
-		 (p1-collumn-num (array-dimension p1 1))
-		 (p2-collumn-num (array-dimension p2 1))
-		 (result t)
-	     )
-	     
-	     (cond ((not (= p1-line-num p2-line-num)) (setf result nil))
-		     ((not (= p1-collumn-num p2-collumn-num)) (setf result nil))
-		     (t 
-				(loop for line from 0 to (1- p1-line-num) do
-					(loop for collumn from 0 to (1- p1-collumn-num) do
-						(when (not (eq (aref p1 line collumn) (aref p2 line collumn)))
-							(setf result nil)
-							(return)
-						)
-						
-					)
-				)
-			)
-	     )
-	     
-	     result
-	)
-)
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; ARRAY-PECAS-IGUAIS-P
-;; Returns true if both arrays (holding tetris pieces) are 
-;; equal.
-;; POR TESTAR!!!!!!!!
-(defun array-pecas-iguais-p (arr1 arr2)
-	(let ((result t))
-		(loop for index from 0 to (1- (array-dimension arr1 0)) do
-			(when (not (pecas-iguais-p (aref arr1 index) (aref arr2 index))) 
-				(setf result nil)
-				(return)
-			)
-		)	
-		result
-	)
-)
-
-
 
 
 ;;#######################################################          
@@ -440,14 +389,95 @@
 		)
 	)
 )
- 
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; ESTADO-FINAL-P
+;; Returns true if ESTADO is an objective state:
+;; 	- Atlest one position of top line of TABULEIRO is 
+;; 	filled;
+;; 	- List of PECAS-POR-COLOCAR is empty.
+;; ===SEEMS TO BE WORKING, NOT SURE.===
+(defun estado-final-p (est)
+	(let ((result t))
+		(block condition-block
+			(if (tabuleiro-topo-preenchido-p (estado-tabuleiro est))
+				(progn
+					(setf result t)
+					(return-from condition-block)
+				)
+				()
+			)
+			
+			(loop for index from 0 to (1- (array-dimension (estado-pecas-por-colocar est) 0)) do
+				(when (not (eq nil (aref (estado-pecas-por-colocar est) index)))
+					(setf result nil)
+					(return-from condition-block)
+				)
+			)
+				
+		)
+		
+		result
+	)
+)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; ESTADOS-IGUAIS-P
+;; Returns true if both ESTADO objects are equal.
+;; TESTADO
+(defun estados-iguais-p (est1 est2)
+	(let ((result t))
+		(block conditions-block
+			(if (= (estado-pontos est1) (estado-pontos est2))
+				()
+				(progn
+					(setf result nil)
+					(return-from conditions-block)
+				)
+			)
+			
+			(if (equalp (estado-pecas-por-colocar est1) (estado-pecas-por-colocar est2))
+				()
+				(progn
+					(setf result nil)
+					(return-from conditions-block)
+				)
+			)
+			
+			(if (equalp (estado-pecas-colocadas est1) (estado-pecas-colocadas est2))
+				()
+				(progn
+					(setf result nil)
+					(return-from conditions-block)
+				)
+			)
+			
+			(if (tabuleiros-iguais-p (estado-tabuleiro est1) (estado-tabuleiro est2))
+				()
+				(progn
+					(setf result nil)
+					(return-from conditions-block)
+				)
+			)
+		)
+		
+		result
+	)
+)
+
+
+
+
  
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; COPIA-ESTADO
-;; Adds a piece to the 'pecas-colocadas' list.
-;; TESTADO
+;; Copies a ESTADO.
+;; ==SEEMS TO WORK, NOT SURE YET==
 (defun copia-estado (estado)
 	(let ((result (make-estado 
 					:pontos 0 
@@ -468,17 +498,13 @@
      
      
      
+     
 
 ;;#################################################          
 ;;################# TIPO PROBLEMA #################
 ;;#################################################
 (defstruct problema estado-inicial solucao accoes resultado custo-caminho)
 
-(make-problema :estado-inicial t  :solucao NIL  :accoes NIL  :resultado NIL :custo-caminho NIL)
-(make-problema :estado-inicial NIL  :solucao t  :accoes NIL  :resultado NIL :custo-caminho NIL)
-(make-problema :estado-inicial NIL  :solucao NIL  :accoes t  :resultado NIL :custo-caminho NIL)
-(make-problema :estado-inicial NIL  :solucao NIL  :accoes NIL  :resultado t :custo-caminho NIL)
-(make-problema :estado-inicial NIL  :solucao NIL  :accoes NIL  :resultado NIL :custo-caminho t)
 
 
 
