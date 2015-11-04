@@ -6,6 +6,9 @@
 (defconstant POSITION-FILLED 1)
 (defconstant POSITION-EMPTY 0)
 
+(defconstant MAX-PECAS-POR-COLOCAR 50)
+(defconstant MAX-PECAS-COLOCADAS 50)
+
 ;;#######################################################
 ;;################## AUXILIARY FUNCTIONS ################
 ;;############# Nao sao pedidas no enunciado ############
@@ -38,10 +41,16 @@
 ;;#######################################################          
 ;;##################### TIPO ACCAO ######################
 ;;#######################################################
-;; COLUNA: collumn number of leftmost piece.
+;; COLUNA: collumn number of leftmost(mais a esquerda)
+;; position of piece.
 ;; 
 ;; PECA: 2D array with piece configuration.
 ;; 		ex: ((T T)(T nil)(T nil))
+;;
+;; Usage:
+;; (setf a1 (cria-accao :coluna 0 :peca peca-i0))
+;; (accao-coluna a1) -> 0
+;; (accao-peca a1) -> copia de peca-i0
 (defstruct accao 	
 			coluna 
 			peca
@@ -53,13 +62,14 @@
 ;; CRIA-ACCAO
 ;; Receives a collumn number and a tetris piece configuration.
 ;; Returns a new ACCAO struct.
+;; TESTADO
 (defun cria-accao (collumn piece)
 	(let ((result (make-accao :coluna collumn :peca (array-copia piece))))
-		;;Copy piece array or just set pointer to 'piece'?
-;; 		(setq result (make-accao :coluna collumn :peca (array-copia piece)))
 		result
 	)
 )
+
+
 
 
 
@@ -71,7 +81,6 @@
 ;; 2D array with dimensions (NUM-LINES, NUM-COLLUMNS).
 ;; Filled positions contain POSITION-FILLED.
 ;; Empty positions contain POSITION-EMPTY.
-
 (defun cria-tabuleiro ()
 	(make-array (list NUM-LINES NUM-COLLUMNS) :element-type 'bit :initial-element POSITION-EMPTY)
 )
@@ -262,19 +271,72 @@
 )
 
 
-          
-          
+
+
+
+
 ;;###################################################          
 ;;################### TIPO ESTADO ###################
 ;;###################################################
-(defstruct estado pontos pecas-por-colocar pecas-colocadas tabuleiro)
+;; Type ESTADO, describes the state of one game 
+;; (one 'tabuleiro')
+;;
+;; PONTOS: number of points obtained so far.
+;; 
+;; PECAS-POR-COLOCAR: list of pieces not placed in 
+;; their final position yet (i.e. they are still
+;; floating?).
+;;
+;; PECAS-COLOCADAS: list of pienes already placed 
+;; at the bottom of TABULEIRO.
+;;
+;; TABULEIRO: the game table, of type 'tabuleiro'.
+(defstruct estado 
+			pontos 
+			pecas-por-colocar
+			pecas-colocadas 
+			tabuleiro
+)
 
-(make-estado :pontos NIL :pecas-por-colocar NIL :pecas-colocadas NIL :tabuleiro NIL)
-(make-estado :pontos NIL :pecas-por-colocar t :pecas-colocadas NIL :tabuleiro NIL)
-(make-estado :pontos NIL :pecas-por-colocar NIL :pecas-colocadas t :tabuleiro NIL)
-(make-estado :pontos NIL :pecas-por-colocar NIL :pecas-colocadas NIL :tabuleiro t)
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; COPIA-ESTADO
+;; Creates a new empty 'estado'
+;; TESTADO
+(defun cria-estado ()
+	(let ((result (make-estado 
+					:pontos 0 
+					:pecas-por-colocar (make-array (list MAX-PECAS-POR-COLOCAR)) 
+					:pecas-colocadas (make-array (list MAX-PECAS-COLOCADAS)) 
+					:tabuleiro (cria-tabuleiro))
+		))
+		result
+	)
+)
 
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; ESTADO-INC-PONTOS
+;; Increases the number of points of a given 'estado'
+;; TESTADO
+(defun estado-inc-pontos (estado num-pontos)
+	(setf (estado-pontos estado) (+ (estado-pontos estado) num-pontos))
+)
+     
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; ESTADO-ADICIONA-PECA
+;; Adds a 'peca-por-colocar' to the list.
+;; TESTADO
+(defun estado-adiciona-peca (estado peca)
+	
+)
+     
+     
+     
+     
 
 ;;#################################################          
 ;;################# TIPO PROBLEMA #################
