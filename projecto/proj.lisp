@@ -6,8 +6,8 @@
 (defconstant POSITION-FILLED 1)
 (defconstant POSITION-EMPTY 0)
 
-(defconstant MAX-PECAS-POR-COLOCAR 50)
-(defconstant MAX-PECAS-COLOCADAS 50)
+(defconstant MAX-PECAS 50)
+
 
 ;;#######################################################
 ;;################## AUXILIARY FUNCTIONS ################
@@ -35,6 +35,26 @@
 		)
 	)
 )
+
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; ARRAY-PECAS-COPY
+;; Returns copy of given array of 'pecas'.
+;; Exp: (peca-i0, peca-i1, NIL, NIL) -> (peca-i0, peca-i1, NIL, NIL)
+;; TESTADO
+(defun array-pecas-copia (old-array)
+	(let ((result (make-array (list MAX-PECAS))))
+		(dotimes (index MAX-PECAS)
+			(when (not (null (aref old-array index)))
+				(setf (aref result index) (aref old-array index))
+			)
+		)
+		result
+	)
+)
+
 
 
 
@@ -230,6 +250,17 @@
 
 
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; TABULEIRO-REMOVE-LINHA!
+;; Receives a 'tabuleiro' and a line number, and clears that 
+;; line. All lines above will drop down until they find a 
+;; 'floor'.
+;; (defun tabuleiro-remove-linha! (tab line)
+;; 	;;TODO
+;; )
+
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -300,14 +331,14 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; COPIA-ESTADO
+;; CRIA-ESTADO
 ;; Creates a new empty 'estado'
 ;; TESTADO
 (defun cria-estado ()
 	(let ((result (make-estado 
 					:pontos 0 
-					:pecas-por-colocar (make-array (list MAX-PECAS-POR-COLOCAR)) 
-					:pecas-colocadas (make-array (list MAX-PECAS-COLOCADAS)) 
+					:pecas-por-colocar (make-array (list MAX-PECAS)) 
+					:pecas-colocadas (make-array (list MAX-PECAS)) 
 					:tabuleiro (cria-tabuleiro))
 		))
 		result
@@ -317,23 +348,68 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; ESTADO-INC-PONTOS
+;; ESTADO-PONTOS-ADICIONA!
 ;; Increases the number of points of a given 'estado'
 ;; TESTADO
-(defun estado-inc-pontos (estado num-pontos)
+(defun estado-pontos-adiciona! (estado num-pontos)
 	(setf (estado-pontos estado) (+ (estado-pontos estado) num-pontos))
 )
      
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; ESTADO-ADICIONA-PECA
-;; Adds a 'peca-por-colocar' to the list.
-;; TESTADO
-(defun estado-adiciona-peca (estado peca)
-	
-)
      
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; ESTADO-PECA-ADICIONA!
+;; Adds a piece to the 'pecas-por-colocar' list.
+;; TESTADO
+(defun estado-peca-adiciona! (estado peca)
+	(loop for index from 0 to MAX-PECAS
+		do
+		(when (null (aref (estado-pecas-por-colocar estado) index))
+			(setf (aref (estado-pecas-por-colocar estado) index) peca)
+			(return)
+		)
+	)
+)
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; ESTADO-PECA-COLOCADA-ADICIONA!
+;; Adds a piece to the 'pecas-colocadas' list.
+;; TESTADO
+(defun estado-peca-colocada-adiciona! (estado peca)
+	(loop for index from 0 to MAX-PECAS
+		do
+		(when (null (aref (estado-pecas-colocadas estado) index))
+			(setf (aref (estado-pecas-colocadas estado) index) peca)
+			(return)
+		)
+	)
+)
+ 
+ 
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; COPIA-ESTADO
+;; Adds a piece to the 'pecas-colocadas' list.
+;; 
+(defun copia-estado (estado)
+	(let ((result (make-estado 
+					:pontos 0 
+					:pecas-por-colocar (make-array (list MAX-PECAS)) 
+					:pecas-colocadas (make-array (list MAX-PECAS)) 
+					:tabuleiro (cria-tabuleiro))
+		))
+		
+		(setf (estado-pontos result) (estado-pontos estado)) 
+		(setf (estado-pecas-por-colocar result) (array-pecas-copia (estado-pecas-por-colocar estado)))
+		(setf (estado-pecas-colocadas result) (array-pecas-copia (estado-pecas-colocadas estado)))
+		(setf (estado-tabuleiro result) (copia-tabuleiro (estado-tabuleiro estado)))
+		result
+	)
+)
      
      
      
