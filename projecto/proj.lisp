@@ -40,8 +40,8 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; ARRAY-PECAS-COPY
-;; Returns copy of given array of 'pecas'.
+;; ARRAY-PECAS-COPIA
+;; Returns copy of given 1D array of 'pecas'.
 ;; Exp: (peca-i0, peca-i1, NIL, NIL) -> (peca-i0, peca-i1, NIL, NIL)
 ;; TESTADO
 (defun array-pecas-copia (old-array)
@@ -51,6 +51,59 @@
 				(setf (aref result index) (aref old-array index))
 			)
 		)
+		result
+	)
+)
+
+
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; PECAS-IGUAIS-P
+;; Returns true if both tetris pieces are equal.
+;; POR TESTAR!!!!!!!!
+(defun pecas-iguais-p (p1 p2)
+	(let ((p1-line-num (array-dimension p1 0))
+		 (p2-line-num (array-dimension p2 0))
+		 (p1-collumn-num (array-dimension p1 1))
+		 (p2-collumn-num (array-dimension p2 1))
+		 (result t)
+	     )
+	     
+	     (cond ((not (= p1-line-num p2-line-num)) (setf result nil))
+		     ((not (= p1-collumn-num p2-collumn-num)) (setf result nil))
+		     (t 
+				(loop for line from 0 to (1- p1-line-num) do
+					(loop for collumn from 0 to (1- p1-collumn-num) do
+						(when (not (eq (aref p1 line collumn) (aref p2 line collumn)))
+							(setf result nil)
+							(return)
+						)
+						
+					)
+				)
+			)
+	     )
+	     
+	     result
+	)
+)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; ARRAY-PECAS-IGUAIS-P
+;; Returns true if both arrays (holding tetris pieces) are 
+;; equal.
+;; POR TESTAR!!!!!!!!
+(defun array-pecas-iguais-p (arr1 arr2)
+	(let ((result t))
+		(loop for index from 0 to (1- (array-dimension arr1 0)) do
+			(when (not (pecas-iguais-p (aref arr1 index) (aref arr2 index))) 
+				(setf result nil)
+				(return)
+			)
+		)	
 		result
 	)
 )
@@ -356,7 +409,7 @@
 )
      
 
-     
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; ESTADO-PECA-ADICIONA!
@@ -394,7 +447,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; COPIA-ESTADO
 ;; Adds a piece to the 'pecas-colocadas' list.
-;; 
+;; TESTADO
 (defun copia-estado (estado)
 	(let ((result (make-estado 
 					:pontos 0 
@@ -410,6 +463,8 @@
 		result
 	)
 )
+
+
      
      
      
