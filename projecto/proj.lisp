@@ -8,13 +8,14 @@
 
 ;;#######################################################
 ;;################## AUXILIARY FUNCTIONS ################
+;;############# Nao sao pedidas no enunciado ############
 ;;#######################################################
-
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; ARRAY-COPY
 ;; Returns copy of given 2D array.
+;; TESTADO
 (defun array-copia (old-array)
 	(let ((line-num (array-dimension old-array 0))
 		(collumn-num (array-dimension old-array 1)))
@@ -53,9 +54,10 @@
 ;; Receives a collumn number and a tetris piece configuration.
 ;; Returns a new ACCAO struct.
 (defun cria-accao (collumn piece)
-	(let ((result))
+	(let ((result (make-accao :coluna collumn :peca (array-copia piece))))
 		;;Copy piece array or just set pointer to 'piece'?
-		(setf result (make-accao :coluna collumn :peca (array-copia piece)))
+;; 		(setq result (make-accao :coluna collumn :peca (array-copia piece)))
+		result
 	)
 )
 
