@@ -6,8 +6,6 @@
 (defconstant POSITION-FILLED 1)
 (defconstant POSITION-EMPTY 0)
 
-(defconstant MAX-PECAS 50)
-
 
 ;;#######################################################
 ;;################## AUXILIARY FUNCTIONS ################
@@ -16,7 +14,7 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; ARRAY-COPY
+;; ARRAY-COPIA
 ;; Returns copy of given 2D array.
 ;; TESTADO
 (defun array-copia (old-array)
@@ -38,22 +36,6 @@
 
 
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; ARRAY-PECAS-COPIA
-;; Returns copy of given 1D array of 'pecas'.
-;; Exp: (peca-i0, peca-i1, NIL, NIL) -> (peca-i0, peca-i1, NIL, NIL)
-;; TESTADO
-(defun array-pecas-copia (old-array)
-	(let ((result (make-array (list MAX-PECAS))))
-		(dotimes (index MAX-PECAS)
-			(when (not (null (aref old-array index)))
-				(setf (aref result index) (aref old-array index))
-			)
-		)
-		result
-	)
-)
 
 
 
@@ -258,9 +240,9 @@
 ;; Receives a 'tabuleiro' and a line number, and clears that 
 ;; line. All lines above will drop down until they find a 
 ;; 'floor'.
-;; (defun tabuleiro-remove-linha! (tab line)
-;; 	;;TODO
-;; )
+(defun tabuleiro-remove-linha! (#|tab line|#)
+	;;TODO
+)
 
 
 
@@ -320,7 +302,7 @@
 ;; their final position yet (i.e. they are still
 ;; floating?).
 ;;
-;; PECAS-COLOCADAS: list of pienes already placed 
+;; PECAS-COLOCADAS: list of pieces already placed 
 ;; at the bottom of TABULEIRO.
 ;;
 ;; TABULEIRO: the game table, of type 'tabuleiro'.
@@ -331,21 +313,6 @@
 			tabuleiro
 )
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; CRIA-ESTADO
-;; Creates a new empty 'estado'
-;; TESTADO
-(defun cria-estado ()
-	(let ((result (make-estado 
-					:pontos 0 
-					:pecas-por-colocar (make-array (list MAX-PECAS)) 
-					:pecas-colocadas (make-array (list MAX-PECAS)) 
-					:tabuleiro (cria-tabuleiro))
-		))
-		result
-	)
-)
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -354,7 +321,10 @@
 ;; Increases the number of points of a given 'estado'
 ;; TESTADO
 (defun estado-pontos-adiciona! (estado num-pontos)
-	(setf (estado-pontos estado) (+ (estado-pontos estado) num-pontos))
+	(if (not (null (estado-pontos estado)))
+		(setf (estado-pontos estado) (+ (estado-pontos estado) num-pontos))
+		(setf (estado-pontos estado) num-pontos)
+	)
 )
      
 
@@ -365,13 +335,7 @@
 ;; Adds a piece to the 'pecas-por-colocar' list.
 ;; TESTADO
 (defun estado-peca-adiciona! (estado peca)
-	(loop for index from 0 to MAX-PECAS
-		do
-		(when (null (aref (estado-pecas-por-colocar estado) index))
-			(setf (aref (estado-pecas-por-colocar estado) index) peca)
-			(return)
-		)
-	)
+	(append (estado-pecas-por-colocar estado) (list peca))
 )
 
 
@@ -381,13 +345,7 @@
 ;; Adds a piece to the 'pecas-colocadas' list.
 ;; TESTADO
 (defun estado-peca-colocada-adiciona! (estado peca)
-	(loop for index from 0 to MAX-PECAS
-		do
-		(when (null (aref (estado-pecas-colocadas estado) index))
-			(setf (aref (estado-pecas-colocadas estado) index) peca)
-			(return)
-		)
-	)
+	(append (estado-pecas-colocadas estado) (list peca))
 )
 
 
@@ -398,7 +356,7 @@
 ;; 	- Atlest one position of top line of TABULEIRO is 
 ;; 	filled;
 ;; 	- List of PECAS-POR-COLOCAR is empty.
-;; ===SEEMS TO BE WORKING, NOT SURE.===
+;; TESTED
 (defun estado-final-p (est)
 	(let ((result t))
 		(block condition-block
@@ -410,11 +368,9 @@
 				()
 			)
 			
-			(loop for index from 0 to (1- (array-dimension (estado-pecas-por-colocar est) 0)) do
-				(when (not (eq nil (aref (estado-pecas-por-colocar est) index)))
-					(setf result nil)
-					(return-from condition-block)
-				)
+			(when (not (null (estado-pecas-por-colocar est)))
+				(setf result nil)
+				(return-from condition-block)
 			)
 				
 		)
@@ -422,6 +378,7 @@
 		result
 	)
 )
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -431,7 +388,7 @@
 (defun estados-iguais-p (est1 est2)
 	(let ((result t))
 		(block conditions-block
-			(if (= (estado-pontos est1) (estado-pontos est2))
+			(if (equal (estado-pontos est1) (estado-pontos est2))
 				()
 				(progn
 					(setf result nil)
@@ -479,16 +436,11 @@
 ;; Copies a ESTADO.
 ;; ==SEEMS TO WORK, NOT SURE YET==
 (defun copia-estado (estado)
-	(let ((result (make-estado 
-					:pontos 0 
-					:pecas-por-colocar (make-array (list MAX-PECAS)) 
-					:pecas-colocadas (make-array (list MAX-PECAS)) 
-					:tabuleiro (cria-tabuleiro))
-		))
+	(let ((result (make-estado)))
 		
 		(setf (estado-pontos result) (estado-pontos estado)) 
-		(setf (estado-pecas-por-colocar result) (array-pecas-copia (estado-pecas-por-colocar estado)))
-		(setf (estado-pecas-colocadas result) (array-pecas-copia (estado-pecas-colocadas estado)))
+		(setf (estado-pecas-por-colocar result) (copy-list (estado-pecas-por-colocar estado)))
+		(setf (estado-pecas-colocadas result) (copy-list (estado-pecas-colocadas estado)))
 		(setf (estado-tabuleiro result) (copia-tabuleiro (estado-tabuleiro estado)))
 		result
 	)
@@ -503,9 +455,42 @@
 ;;#################################################          
 ;;################# TIPO PROBLEMA #################
 ;;#################################################
-(defstruct problema estado-inicial solucao accoes resultado custo-caminho)
+(defstruct problema 
+			estado-inicial 
+			solucao 
+			accoes 
+			resultado 
+			custo-caminho
+)
 
 
+(defun cria-problema (estado solucao accoes resultado custo-caminho)
+	(let ((result (make-problema)))
+		(setf (problema-estado-inicial result) estado)
+		
+		(setf (problema-solucao result)
+			#'(lambda (estado)
+				;;devolve T se o estado for solucao para o problema de procura
+			)
+		)
+		
+		(setf (problema-accoes result)
+			#'(lambda (estado)
+				;;devolve lista com todas as accoes que sao possiveis nesse estado
+			)
+		)
+		
+		(setf (problema-resultado result)
+			#'(lambda (estado accao)
+				;;devolve estado sucessor que resulta de executar a accao recebida
+			)
+		)
+		
+		(setf (problema-custo-caminho result) 0)
+		
+		result
+	)
+)
 
 
 
