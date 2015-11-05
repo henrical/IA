@@ -6,6 +6,14 @@
 (defconstant POSITION-FILLED 1)
 (defconstant POSITION-EMPTY 0)
 
+(defconstant pecas-i (list peca-i0 peca-i1))
+(defconstant pecas-l (list peca-l0 peca-l1 peca-l2 peca-l3))
+(defconstant pecas-j (list peca-j0 peca-j1 peca-j2 peca-j3))
+(defconstant pecas-o (list peca-o0))
+(defconstant pecas-s (list peca-s0 peca-s1))
+(defconstant pecas-z (list peca-z0 peca-z1))
+(defconstant pecas-t (list peca-t0 peca-t1 peca-t2 peca-t3))
+
 
 ;;#######################################################
 ;;################## AUXILIARY FUNCTIONS ################
@@ -33,9 +41,6 @@
 		)
 	)
 )
-
-
-
 
 
 
@@ -308,7 +313,7 @@
 ;; TABULEIRO: the game table, of type 'tabuleiro'.
 (defstruct estado 
 			pontos ;;----------------------inteiro
-			pecas-por-colocar ;;;----------lista
+			pecas-por-colocar ;;-----------lista
 			pecas-colocadas ;;-------------lista
 			tabuleiro ;;-------------------tipo tabuleiro
 )
@@ -464,35 +469,6 @@
 )
 
 
-(defun cria-problema (estado solucao accoes resultado custo-caminho)
-	(let ((result (make-problema)))
-		(setf (problema-estado-inicial result) estado)
-		
-		(setf (problema-solucao result)
-			#'(lambda (estado)
-				;;devolve T se o estado for solucao para o problema de procura
-			)
-		)
-		
-		(setf (problema-accoes result)
-			#'(lambda (estado)
-				;;devolve lista com todas as accoes que sao possiveis nesse estado
-			)
-		)
-		
-		(setf (problema-resultado result)
-			#'(lambda (estado accao)
-				;;devolve estado sucessor que resulta de executar a accao recebida
-			)
-		)
-		
-		(setf (problema-custo-caminho result) 0)
-		
-		result
-	)
-)
-
-
 
 ;;######################################################   
 ;;######################## 2.2.1 #######################         
@@ -519,7 +495,6 @@
 			
 			(when (not (null (estado-pecas-por-colocar estado)))
 				(setf result nil)
-				(print "pecas list is null!!")
 				(return-from condition-block)
 			)
 		)
@@ -529,7 +504,21 @@
 )
 
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; ACCOES
+;; Receives a ESTADO and returns list of all possible ACCAO
+;; objects possible, containing the next PECA-POR-COLOCAR.
+;; 
+;; ESTADO -> pecas-por-colocar ---> (i, o , z, t , l)
+;;                                 |
+;;                                 v
+;;               (accao(0 peca-i0)), accao(1, peca-i0)), (..)
+;;		     ,(accao(16, peca-i1)), (accao(17, peca-i1)))
+;; 
+(defun accoes ()
 
+)
 
 
 
