@@ -299,18 +299,18 @@
 ;; PONTOS: number of points obtained so far.
 ;; 
 ;; PECAS-POR-COLOCAR: list of pieces not placed in 
-;; their final position yet (i.e. they are still
-;; floating?).
+;; their final position yet, known when ESTADO is 
+;; created.
 ;;
 ;; PECAS-COLOCADAS: list of pieces already placed 
 ;; at the bottom of TABULEIRO.
 ;;
 ;; TABULEIRO: the game table, of type 'tabuleiro'.
 (defstruct estado 
-			pontos 
-			pecas-por-colocar
-			pecas-colocadas 
-			tabuleiro
+			pontos ;;----------------------inteiro
+			pecas-por-colocar ;;;----------lista
+			pecas-colocadas ;;-------------lista
+			tabuleiro ;;-------------------tipo tabuleiro
 )
 
 
@@ -434,7 +434,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; COPIA-ESTADO
 ;; Copies a ESTADO.
-;; ==SEEMS TO WORK, NOT SURE YET==
+;; TESTADO
 (defun copia-estado (estado)
 	(let ((result (make-estado)))
 		
@@ -494,8 +494,39 @@
 
 
 
+;;######################################################   
+;;######################## 2.2.1 #######################         
+;;################# FUNCOES DO PROBLEMA ################
+;;##################### DE PROCURA #####################
+;;######################################################
 
-
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; SOLUCAO
+;; Receives a ESTADO and returns true if it is a solution.
+;; 
+;; is_solution => not(tabuleiro-topo-preenchido-p) 
+;; 			&& empty(pecas-por-colocar)
+;; 
+;; SEEMS TO BE WORKING
+(defun solucao (estado)
+	(let ((result t))
+		(block condition-block
+			(when (tabuleiro-topo-preenchido-p (estado-tabuleiro estado))
+				(setf result nil)
+				(return-from condition-block)
+			)
+			
+			(when (not (null (estado-pecas-por-colocar estado)))
+				(setf result nil)
+				(print "pecas list is null!!")
+				(return-from condition-block)
+			)
+		)
+		
+		result
+	)
+)
 
 
 
