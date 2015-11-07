@@ -6,13 +6,49 @@
 (defconstant POSITION-FILLED 1)
 (defconstant POSITION-EMPTY 0)
 
-(defconstant pecas-i (list peca-i0 peca-i1))
-(defconstant pecas-l (list peca-l0 peca-l1 peca-l2 peca-l3))
-(defconstant pecas-j (list peca-j0 peca-j1 peca-j2 peca-j3))
-(defconstant pecas-o (list peca-o0))
-(defconstant pecas-s (list peca-s0 peca-s1))
-(defconstant pecas-z (list peca-z0 peca-z1))
-(defconstant pecas-t (list peca-t0 peca-t1 peca-t2 peca-t3))
+(defconstant I-SYMBOL 'I)
+(defconstant L-SYMBOL 'L) 
+(defconstant J-SYMBOL 'J) 
+(defconstant O-SYMBOL 'O) 
+(defconstant S-SYMBOL 'S)
+(defconstant Z-SYMBOL 'Z) 
+(defconstant T-SYMBOL 'T) 
+
+;;peca i 
+(defconstant p-i0 (make-array (list 4 1) :initial-element T))
+(defconstant p-i1 (make-array (list 1 4) :initial-element T))
+;;peca l
+(defconstant p-l0 (make-array (list 3 2) :initial-contents '((T T)(T nil)(T nil))))
+(defconstant p-l1 (make-array (list 2 3) :initial-contents '((T nil nil)(T T T))))
+(defconstant p-l2 (make-array (list 3 2) :initial-contents '((nil T)(nil T)(T T))))
+(defconstant p-l3 (make-array (list 2 3) :initial-contents '((T T T)(nil nil T))))
+;;peca j
+(defconstant p-j0 (make-array (list 3 2) :initial-contents '((T T)(nil T)(nil T))))
+(defconstant p-j1 (make-array (list 2 3) :initial-contents '((T T T)(T nil nil))))
+(defconstant p-j2 (make-array (list 3 2) :initial-contents '((T nil)(T nil)(T T))))
+(defconstant p-j3 (make-array (list 2 3) :initial-contents '((nil nil T)(T T T))))
+;;peca o
+(defconstant p-o0 (make-array (list 2 2) :initial-element T))
+;;peca s
+(defconstant p-s0 (make-array (list 2 3) :initial-contents '((T T nil)(nil T T))))
+(defconstant p-s1 (make-array (list 3 2) :initial-contents '((nil T)(T T)(T nil))))
+;;peca z
+(defconstant p-z0 (make-array (list 2 3) :initial-contents '((nil T T)(T T nil))))
+(defconstant p-z1 (make-array (list 3 2) :initial-contents '((T nil)(T T)(nil T))))
+;;peca t
+(defconstant p-t0 (make-array (list 2 3) :initial-contents '((T T T)(nil T nil))))
+(defconstant p-t1 (make-array (list 3 2) :initial-contents '((T nil)(T T)(T nil))))
+(defconstant p-t2 (make-array (list 2 3) :initial-contents '((nil T nil)(T T T))))
+(defconstant p-t3 (make-array (list 3 2) :initial-contents '((nil T)(T T)(nil T))))
+
+
+(defconstant pecas-i (list p-i0 p-i1))
+(defconstant pecas-l (list p-l0 p-l1 p-l2 p-l3))
+(defconstant pecas-j (list p-j0 p-j1 p-j2 p-j3))
+(defconstant pecas-o (list p-o0))
+(defconstant pecas-s (list p-s0 p-s1))
+(defconstant pecas-z (list p-z0 p-z1))
+(defconstant pecas-t (list p-t0 p-t1 p-t2 p-t3))
 
 
 ;;#######################################################
@@ -43,8 +79,45 @@
 )
 
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; GET-CONFIGURATIONS
+;; Receives list of PECAS-POR-COLOCAR and returns a list with
+;; the possible configurations of next piece.
+;;TESTADO
+(defun get-configurations (pecas-por-colocar)
+	(let ((peca (first pecas-por-colocar)))
+		(cond ((eq peca I-SYMBOL) pecas-i)
+			((eq peca L-SYMBOL) pecas-l)
+			((eq peca O-SYMBOL) pecas-o)
+			((eq peca J-SYMBOL) pecas-j)
+			((eq peca Z-SYMBOL) pecas-z)
+			((eq peca S-SYMBOL) pecas-s)
+			((eq peca T-SYMBOL) pecas-t)
+		)
+	)
+)
 
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; PIECE-WIDTH
+;; Receives a PECA and returns its width.
+;; TESTADO
+(defun piece-width (peca)
+	(let ((result 0))
+		(dotimes (line (array-dimension peca 0))
+			(dotimes (collumn (array-dimension peca 1))
+				(when (eq t (aref peca line collumn))
+					(when (> collumn result)
+						(setf result collumn)
+					)
+				)
+			)
+		)
+		(1+ result)
+	)
+)
 
 
 ;;#######################################################          
@@ -56,30 +129,35 @@
 ;; PECA: 2D array with piece configuration.
 ;; 		ex: ((T T)(T nil)(T nil))
 ;;
-;; Usage:
-;; (setf a1 (cria-accao :coluna 0 :peca peca-i0))
-;; (accao-coluna a1) -> 0
-;; (accao-peca a1) -> copia de peca-i0
-(defstruct accao 	
-			coluna 
-			peca
-)
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; CRIA-ACCAO
 ;; Receives a collumn number and a tetris piece configuration.
-;; Returns a new ACCAO struct.
 ;; TESTADO
 (defun cria-accao (collumn piece)
-	(let ((result (make-accao :coluna collumn :peca (array-copia piece))))
-		result
-	)
+	(cons collumn piece)
+)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; ACCAO-COLUNA
+;; Receives an ACCAO and returns its collumn number.
+;; TESTADO
+(defun accao-coluna (accao)
+	(first accao)
 )
 
 
-
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; ACCAO-PECA
+;; Receives an ACCAO and returns its PECA.
+;; TESTADO
+(defun accao-peca (accao)
+	(rest accao)
+)
 
 
 
@@ -361,7 +439,7 @@
 ;; 	- Atlest one position of top line of TABULEIRO is 
 ;; 	filled;
 ;; 	- List of PECAS-POR-COLOCAR is empty.
-;; TESTED
+;; TESTADO
 (defun estado-final-p (est)
 	(let ((result t))
 		(block condition-block
@@ -510,14 +588,27 @@
 ;; Receives a ESTADO and returns list of all possible ACCAO
 ;; objects possible, containing the next PECA-POR-COLOCAR.
 ;; 
-;; ESTADO -> pecas-por-colocar ---> (i, o , z, t , l)
-;;                                 |
-;;                                 v
+;; ESTADO -> pecas-por-colocar --->(i, o , z, t , l)
+;;                                 	|
+;;                                 	v
 ;;               (accao(0 peca-i0)), accao(1, peca-i0)), (..)
 ;;		     ,(accao(16, peca-i1)), (accao(17, peca-i1)))
 ;; 
-(defun accoes ()
-
+(defun accoes (estado)
+	(let ((result) (configurations))
+		(setf configurations (get-configurations (estado-pecas-por-colocar estado)))
+		
+		(dolist (elem configurations)
+			(loop for collumn from 0 to  (1- NUM-COLLUMNS) do
+				(when (>= NUM-COLLUMNS (+ collumn (piece-width elem)))
+					(setf result (append result (list (cria-accao collumn elem))))
+					(print (cria-accao collumn elem))
+				)
+			)
+		)
+		result
+		
+	)
 )
 
 

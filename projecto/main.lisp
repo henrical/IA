@@ -1,7 +1,7 @@
-;; (defvar est1 (cria-estado))
-;; (estado-peca-adiciona! est1 peca-i0)
-;; (estado-pontos-adiciona! est1 150)
-;; (defvar est2 (copia-estado est1))
+(defvar est1 (cria-estado))
+(estado-peca-adiciona! est1 peca-i0)
+(estado-pontos-adiciona! est1 150)
+(defvar est2 (copia-estado est1))
 
 (defvar e2 (make-estado :tabuleiro t1 :pecas-por-colocar '()))
 ;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
