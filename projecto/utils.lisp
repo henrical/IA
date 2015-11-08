@@ -150,7 +150,7 @@
 
 (defvar p1
 	(make-problema :estado-inicial (make-estado :tabuleiro t1 :pecas-por-colocar '(i o j l t i))
-				 #|:solucao #'solucao
+				 :solucao #'solucao
 				   :accoes #'accoes
 				   :resultado #'resultado
-				   :custo-caminho #'custo-oportunidade|#))
+				   :custo-caminho #'custo-oportunidade))

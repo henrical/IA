@@ -3,9 +3,12 @@
 (defconstant NUM-LINES 18)
 (defconstant NUM-COLLUMNS 10)
 
+;; Values for empty and filled position  
+;; of TABULEIRO.
 (defconstant POSITION-FILLED 1)
 (defconstant POSITION-EMPTY 0)
 
+;; Symbol representation of each piece in lists.
 (defconstant I-SYMBOL 'I)
 (defconstant L-SYMBOL 'L) 
 (defconstant J-SYMBOL 'J) 
@@ -13,6 +16,16 @@
 (defconstant S-SYMBOL 'S)
 (defconstant Z-SYMBOL 'Z) 
 (defconstant T-SYMBOL 'T) 
+
+;; Maximum amount of points possible to obtain
+;; with each piece.
+(defconstant I-MAX-POINTS 800)
+(defconstant J-MAX-POINTS 500)
+(defconstant L-MAX-POINTS 500)
+(defconstant S-MAX-POINTS 300)
+(defconstant Z-MAX-POINTS 300)
+(defconstant T-MAX-POINTS 300)
+(defconstant O-MAX-POINTS 300)
 
 ;;peca i 
 (defconstant p-i0 (make-array (list 4 1) :initial-element T))
@@ -41,7 +54,7 @@
 (defconstant p-t2 (make-array (list 2 3) :initial-contents '((nil T nil)(T T T))))
 (defconstant p-t3 (make-array (list 3 2) :initial-contents '((nil T)(T T)(nil T))))
 
-
+;; Lists containing all configurations of each piece.
 (defconstant pecas-i (list p-i0 p-i1))
 (defconstant pecas-l (list p-l0 p-l1 p-l2 p-l3))
 (defconstant pecas-j (list p-j0 p-j1 p-j2 p-j3))
@@ -83,7 +96,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; GET-CONFIGURATIONS
 ;; Receives list of PECAS-POR-COLOCAR and returns a list with
-;; the possible configurations of next piece.
+;; the possible configurations of first piece.
 ;;TESTADO
 (defun get-configurations (pecas-por-colocar)
 	(let ((peca (first pecas-por-colocar)))
@@ -118,6 +131,25 @@
 		(1+ result)
 	)
 )
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; PIECE-MAX-POINTS
+;; Receives a PECA and returns the maximum amount of points 
+;; possible for that PECA.
+;; 
+;;
+(defun piece-max-points (peca)
+	(cond ((eq peca I-SYMBOL) I-MAX-POINTS)
+		((eq peca L-SYMBOL) L-MAX-POINTS)
+		((eq peca O-SYMBOL) O-MAX-POINTS)
+		((eq peca J-SYMBOL) J-MAX-POINTS)
+		((eq peca Z-SYMBOL) Z-MAX-POINTS)
+		((eq peca S-SYMBOL) S-MAX-POINTS)
+		((eq peca T-SYMBOL) T-MAX-POINTS)
+	)
+)
+
 
 
 ;;#######################################################          
@@ -581,6 +613,7 @@
 	)
 )
 
+(funcall (problema-accoes p1) e1)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -594,6 +627,7 @@
 ;;               (accao(0 peca-i0)), accao(1, peca-i0)), (..)
 ;;		     ,(accao(16, peca-i1)), (accao(17, peca-i1)))
 ;; 
+;; TESTADO
 (defun accoes (estado)
 	(let ((result) (configurations))
 		(setf configurations (get-configurations (estado-pecas-por-colocar estado)))
@@ -602,7 +636,7 @@
 			(loop for collumn from 0 to  (1- NUM-COLLUMNS) do
 				(when (>= NUM-COLLUMNS (+ collumn (piece-width elem)))
 					(setf result (append result (list (cria-accao collumn elem))))
-					(print (cria-accao collumn elem))
+;; 					(print (cria-accao collumn elem))
 				)
 			)
 		)
@@ -612,8 +646,57 @@
 )
 
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; RESULTADO
+;; Receives a ESTADO and an ACCAO and returns a new ESTADO 
+;; resulting of applying parameter ACCAO to parameter ESTADO. 
+;; 
+;; 
+(defun resultado (estado accao)
+	;;TODO
+)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; QUALIDADE
+;; Receives a ESTADO and returns an integer corresponding to 
+;; the number of points in ESTADO multiplied by -1. 
+;; 
+;;
+(defun qualidade (estado)
+	(* -1 (estado-pontos estado))
+)
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; CUSTO-OPORTUNIDADE
+;; Receives an ESTADO and returns the maximum value of points 
+;; possible obtained with all the PECAS-COLOCADAS.
+;; 
+;; i - 800 -> I-MAX-POINTS
+;; j - 500 -> J-MAX-POINTS
+;; l - 500 -> L-MAX-POINTS
+;; s - 300 -> S-MAX-POINTS
+;; z - 300 -> Z-MAX-POINTS
+;; t - 300 -> T-MAX-POINTS
+;; o - 300 -> O-MAX-POINTS
+;;
+;; TESTADO
+(defun custo-oportunidade (estado)
+	(let ((pecas (estado-pecas-colocadas estado)) (result 0))
+		(dolist (elem pecas)
+			(setf result (+ result (piece-max-points elem)))
+		)
+		
+		result
+	)
+)
+
+
 
 ;; ###########################################
 (load (compile-file "utils.lisp"))
-;;(load "utils.fas") 
+;; (load "utils.fas") 
 ;  ###########################################
