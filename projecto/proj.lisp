@@ -613,8 +613,6 @@
 	)
 )
 
-(funcall (problema-accoes p1) e1)
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; ACCOES
@@ -653,9 +651,9 @@
 ;; resulting of applying parameter ACCAO to parameter ESTADO. 
 ;; 
 ;; 
-(defun resultado (estado accao)
-	;;TODO
-)
+;; (defun resultado (estado accao)
+;; 	;;TODO
+;; )
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -697,6 +695,6 @@
 
 
 ;; ###########################################
-(load (compile-file "utils.lisp"))
-;; (load "utils.fas") 
+;; (load (compile-file "utils.lisp"))
+(load "utils.fas") 
 ;  ###########################################
