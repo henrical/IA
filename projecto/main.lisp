@@ -4,6 +4,12 @@
 (defvar est2 (copia-estado est1))
 
 (defvar e2 (make-estado :tabuleiro t1 :pecas-por-colocar '()))
+
+(setf t1 (cria-tabuleiro))
+(dotimes (coluna 9)
+	(tabuleiro-preenche! t1 0 coluna))
+(dotimes (coluna 9)
+	(tabuleiro-preenche! t1 1 coluna))
 ;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; ;; PECAS-IGUAIS-P

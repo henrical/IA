@@ -107,7 +107,36 @@
 			((eq peca Z-SYMBOL) pecas-z)
 			((eq peca S-SYMBOL) pecas-s)
 			((eq peca T-SYMBOL) pecas-t)
+			
 		)
+	)
+)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; GET-SYMBOL
+;; Receives a piece configuration and returns its symbol.
+;;TESTADO
+(defun get-symbol (peca)
+	(cond ((equalp peca p-i0) I-SYMBOL)
+		((equalp peca p-i1) I-SYMBOL)
+		((equalp peca p-o0) O-SYMBOL)
+		((equalp peca p-s0) S-SYMBOL)
+		((equalp peca p-s1) S-SYMBOL)
+		((equalp peca p-z0) Z-SYMBOL)
+		((equalp peca p-z1) Z-SYMBOL)
+		((equalp peca p-l0) L-SYMBOL)
+		((equalp peca p-l1) L-SYMBOL)
+		((equalp peca p-l2) L-SYMBOL)
+		((equalp peca p-l3) L-SYMBOL)
+		((equalp peca p-j0) J-SYMBOL)
+		((equalp peca p-j1) J-SYMBOL)
+		((equalp peca p-j2) J-SYMBOL)
+		((equalp peca p-j3) J-SYMBOL)
+		((equalp peca p-t0) T-SYMBOL)
+		((equalp peca p-t1) T-SYMBOL)
+		((equalp peca p-t2) T-SYMBOL)
+		((equalp peca p-t3) T-SYMBOL)
 	)
 )
 
@@ -188,7 +217,7 @@
 ;; Receives an ACCAO and returns its PECA.
 ;; TESTADO
 (defun accao-peca (accao)
-	(rest accao)
+	(list (rest accao))
 )
 
 
@@ -235,8 +264,31 @@
   (eq (aref tabuleiro num-linha num-coluna) POSITION-FILLED)
 )
 
-  
 
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; TABULEIRO-COLOCA-PECA!
+;; Places a ACCAO (num-coluna, peca) in the tabuleiro. 
+;; In other words, applies an ACCAO to the TABULEIRO.
+;; PARECE FUNCIONAR BEM
+(defun tabuleiro-coloca-peca! (tabuleiro accao)
+	(let ((coluna-inicial (first accao)) (peca (rest accao)))
+		(dotimes (line (array-dimension peca 0))
+			(dotimes (collumn (array-dimension peca 1))
+				(when (eq (aref peca line collumn) t)
+					(tabuleiro-preenche! 
+						tabuleiro 
+						(tabuleiro-altura-coluna tabuleiro (+ coluna-inicial collumn))
+						(+ coluna-inicial collumn)
+					)
+				)
+			)
+		)
+	)
+)
+
+  
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; TABULEIRO-ALTURA-COLUNA
@@ -700,9 +752,17 @@
 ;; resulting of applying parameter ACCAO to parameter ESTADO. 
 ;; 
 ;; 
-;; (defun resultado (estado accao)
-;; 	;;TODO
-;; )
+(defun resultado (estado accao)
+	(let ((result (make-estado)))
+		(setf (estado-pecas-por-colocar result) (rest (estado-pecas-por-colocar estado)))
+		
+		(setf (estado-pecas-colocadas result) (append (estado-pecas-colocadas estado) (list (get-symbol (accao-peca accao)))))
+		
+		(setf (estado-tabuleiro result) (tabuleiro-coloca-peca! (copia-tabuleiro (estado-tabuleiro estado)) accao))
+	
+		result
+	)
+)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
