@@ -207,7 +207,7 @@
 ;; Receives an ACCAO and returns its collumn number.
 ;; TESTADO
 (defun accao-coluna (accao)
-	(first accao)
+	(car accao)
 )
 
 
@@ -217,7 +217,7 @@
 ;; Receives an ACCAO and returns its PECA.
 ;; TESTADO
 (defun accao-peca (accao)
-	(list (rest accao))
+	(cdr accao)
 )
 
 
@@ -273,18 +273,28 @@
 ;; In other words, applies an ACCAO to the TABULEIRO.
 ;; PARECE FUNCIONAR BEM
 (defun tabuleiro-coloca-peca! (tabuleiro accao)
-	(let ((coluna-inicial (first accao)) (peca (rest accao)))
-		(dotimes (line (array-dimension peca 0))
+	(let ((coluna-inicial (first accao)) (peca (accao-peca accao)) (tab-floor 0))
+		(block conditions
 			(dotimes (collumn (array-dimension peca 1))
-				(when (eq (aref peca line collumn) t)
-					(tabuleiro-preenche! 
-						tabuleiro 
-						(tabuleiro-altura-coluna tabuleiro (+ coluna-inicial collumn))
-						(+ coluna-inicial collumn)
-					)
+				(when (eq t (aref peca 0 collumn))
+					(setf tab-floor (tabuleiro-altura-coluna tabuleiro collumn))
 				)
 			)
 		)
+		
+		tab-floor
+		
+;; 		(dotimes (line (array-dimension peca 0))
+;; 			(dotimes (collumn (array-dimension peca 1))
+;; 				(when (eq (aref peca line collumn) t)
+;; 						(tabuleiro-preenche! 
+;; 							tabuleiro 
+;; 							(+ line (tabuleiro-altura-coluna tabuleiro (+ coluna-inicial collumn)))
+;; 							(+ coluna-inicial collumn)
+;; 						)
+;; 				)
+;; 			)
+;; 		)
 	)
 )
 
@@ -523,10 +533,10 @@
 ;;
 ;; TABULEIRO: the game table, of type 'tabuleiro'.
 (defstruct estado 
-			pontos ;;----------------------inteiro
-			pecas-por-colocar ;;-----------lista
-			pecas-colocadas ;;-------------lista
-			tabuleiro ;;-------------------tipo tabuleiro
+			(pontos 0) ;;----------------------inteiro
+			(pecas-por-colocar  '());;-----------lista
+			(pecas-colocadas '());;-------------lista
+			(tabuleiro (cria-tabuleiro));;-------------------tipo tabuleiro
 )
 
 
@@ -753,12 +763,17 @@
 ;; 
 ;; 
 (defun resultado (estado accao)
-	(let ((result (make-estado)))
+	(let ((result (make-estado)) (tabuleiro (copia-tabuleiro (estado-tabuleiro estado))))
 		(setf (estado-pecas-por-colocar result) (rest (estado-pecas-por-colocar estado)))
 		
-		(setf (estado-pecas-colocadas result) (append (estado-pecas-colocadas estado) (list (get-symbol (accao-peca accao)))))
+		(if (null (estado-pecas-colocadas estado))
+			(setf (estado-pecas-colocadas result) (list (get-symbol (accao-peca accao))))
+			(setf (estado-pecas-colocadas result) (append (estado-pecas-colocadas estado) (list (get-symbol (accao-peca accao)))))
+		)
 		
-		(setf (estado-tabuleiro result) (tabuleiro-coloca-peca! (copia-tabuleiro (estado-tabuleiro estado)) accao))
+		(tabuleiro-coloca-peca! tabuleiro accao) 
+		
+		(setf (estado-tabuleiro result)  tabuleiro)
 	
 		result
 	)
