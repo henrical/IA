@@ -313,6 +313,27 @@
 )
 
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; TABULEIRO-LINHA-PREENCHIDA-P
+;; Returns true if any position in given line is filled.
+;; TESTADO
+(defun tabuleiro-linha-preenchida-p (tabuleiro line) 
+	(let ((result nil))
+		(block loop-block
+			(loop for collumn from 0 to (1- NUM-COLLUMNS)
+				do
+				(when (eq (aref tabuleiro line collumn) POSITION-FILLED)
+					(setf result t)
+					(return-from loop-block)
+				)
+			)
+		)
+	result
+	)
+)
+
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -353,10 +374,38 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; TABULEIRO-REMOVE-LINHA!
 ;; Receives a 'tabuleiro' and a line number, and clears that 
-;; line. All lines above will drop down until they find a 
-;; 'floor'.
-(defun tabuleiro-remove-linha! (#|tab line|#)
-	;;TODO
+;; line. Each lines above will drop down to the line directly
+;; below it.
+;; TESTADO
+(defun tabuleiro-remove-linha! (tabuleiro initial-line)
+	(let ((line initial-line))
+		(if (tabuleiro-linha-preenchida-p tabuleiro line)
+		
+			(progn
+				(dotimes (collumn NUM-COLLUMNS)
+					(setf (aref tabuleiro initial-line collumn) 0)
+				)
+			
+				(incf line)
+				
+				(loop do
+					(dotimes (collumn NUM-COLLUMNS)
+						(when (tabuleiro-preenchido-p tabuleiro line collumn)
+							
+							(setf (aref tabuleiro line collumn) POSITION-EMPTY)
+							(tabuleiro-preenche! tabuleiro (1- line) collumn)
+						)
+					)
+					(incf line)
+				while (< line NUM-LINES #|tabuleiro-linha-preenchida-p tabuleiro line|#))
+				
+				t
+				
+			)
+			
+			nil
+		)
+	)
 )
 
 
@@ -695,6 +744,6 @@
 
 
 ;; ###########################################
-;; (load (compile-file "utils.lisp"))
-(load "utils.fas") 
+(load (compile-file "utils.lisp"))
+;; (load "utils.fas") 
 ;  ###########################################
