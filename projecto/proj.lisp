@@ -1,4 +1,7 @@
 ;;Grupo 43
+;;David Cardoso --------- 79710
+;;Henrique Caldeira ----- 75838
+;;Miguel Ribeiro -------- 78437
 
 (defconstant NUM-LINES 18)
 (defconstant NUM-COLLUMNS 10)
@@ -272,18 +275,18 @@
 ;; Places a ACCAO (num-coluna, peca) in the tabuleiro. 
 ;; In other words, applies an ACCAO to the TABULEIRO.
 ;; PARECE FUNCIONAR BEM
-(defun tabuleiro-coloca-peca! (tabuleiro accao)
-	(let ((coluna-inicial (first accao)) (peca (accao-peca accao)) (tab-floor 0))
-		(block conditions
-			(dotimes (collumn (array-dimension peca 1))
-				(when (eq t (aref peca 0 collumn))
-					(setf tab-floor (tabuleiro-altura-coluna tabuleiro collumn))
-				)
-			)
-		)
-		
-		tab-floor
-		
+;; (defun tabuleiro-coloca-peca! (tabuleiro accao)
+;; 	(let ((coluna-inicial (first accao)) (peca (accao-peca accao)) (tab-floor 0))
+;; 		(block conditions
+;; 			(dotimes (collumn (array-dimension peca 1))
+;; 				(when (eq t (aref peca 0 collumn))
+;; 					(setf tab-floor (tabuleiro-altura-coluna tabuleiro collumn))
+;; 				)
+;; 			)
+;; 		)
+;; 		
+;; 		tab-floor
+;; 		
 ;; 		(dotimes (line (array-dimension peca 0))
 ;; 			(dotimes (collumn (array-dimension peca 1))
 ;; 				(when (eq (aref peca line collumn) t)
@@ -295,8 +298,8 @@
 ;; 				)
 ;; 			)
 ;; 		)
-	)
-)
+;; 	)
+;; )
 
   
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -313,7 +316,10 @@
 			)
 		)
 		;; Return:
-		(1+ max-altura)
+		(if (zerop max-altura)
+			max-altura
+			(1+ max-altura)
+		)
 	)
 )
 
@@ -478,7 +484,7 @@
 ;; Receives an array filled with 1's and 0's.
 ;; Returns an array with positions filled with 'true' and 'nil'
 ;; TESTADO
-(defun tabuleiro-array (tabuleiro) 
+(defun tabuleiro->array (tabuleiro) 
 	(let ((result (make-array (list NUM-LINES NUM-COLLUMNS) :initial-element nil)))
 		(dotimes (line NUM-LINES)
 			(dotimes (collumn NUM-COLLUMNS)
@@ -498,7 +504,7 @@
 ;; Receives an array filled with logic values.
 ;; Returns an array with positions filled with 1's and 0's.
 ;; TESTADO
-(defun array-tabuleiro(array-log)
+(defun array->tabuleiro(array-log)
 	(let ((result (make-array (list NUM-LINES NUM-COLLUMNS) :initial-element 0)))
 		(dotimes (line NUM-LINES)
 			(dotimes (collumn NUM-COLLUMNS)
@@ -762,22 +768,22 @@
 ;; resulting of applying parameter ACCAO to parameter ESTADO. 
 ;; 
 ;; 
-(defun resultado (estado accao)
-	(let ((result (make-estado)) (tabuleiro (copia-tabuleiro (estado-tabuleiro estado))))
-		(setf (estado-pecas-por-colocar result) (rest (estado-pecas-por-colocar estado)))
-		
-		(if (null (estado-pecas-colocadas estado))
-			(setf (estado-pecas-colocadas result) (list (get-symbol (accao-peca accao))))
-			(setf (estado-pecas-colocadas result) (append (estado-pecas-colocadas estado) (list (get-symbol (accao-peca accao)))))
-		)
-		
-		(tabuleiro-coloca-peca! tabuleiro accao) 
-		
-		(setf (estado-tabuleiro result)  tabuleiro)
-	
-		result
-	)
-)
+;; (defun resultado (estado accao)
+;; 	(let ((result (make-estado)) (tabuleiro (copia-tabuleiro (estado-tabuleiro estado))))
+;; 		(setf (estado-pecas-por-colocar result) (rest (estado-pecas-por-colocar estado)))
+;; 		
+;; 		(if (null (estado-pecas-colocadas estado))
+;; 			(setf (estado-pecas-colocadas result) (list (get-symbol (accao-peca accao))))
+;; 			(setf (estado-pecas-colocadas result) (append (estado-pecas-colocadas estado) (list (get-symbol (accao-peca accao)))))
+;; 		)
+;; 		
+;; 		(tabuleiro-coloca-peca! tabuleiro accao) 
+;; 		
+;; 		(setf (estado-tabuleiro result)  tabuleiro)
+;; 	
+;; 		result
+;; 	)
+;; )
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -796,7 +802,7 @@
 ;; CUSTO-OPORTUNIDADE
 ;; Receives an ESTADO and returns the maximum value of points 
 ;; possible obtained with all the PECAS-COLOCADAS.
-;; 
+;; ;;
 ;; i - 800 -> I-MAX-POINTS
 ;; j - 500 -> J-MAX-POINTS
 ;; l - 500 -> L-MAX-POINTS
@@ -812,13 +818,13 @@
 			(setf result (+ result (piece-max-points elem)))
 		)
 		
-		result
+		(- result (estado-pontos estado))
 	)
 )
 
 
 
 ;; ###########################################
-(load (compile-file "utils.lisp"))
-;; (load "utils.fas") 
+;; (load (compile-file "utils.lisp"))
+(load "utils.fas") 
 ;  ###########################################
