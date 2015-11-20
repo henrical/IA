@@ -268,6 +268,32 @@
 )
 
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; PIECE-HEIGHT-COLLUMN
+;; Returns the height of piece in a given collumn
+;; 
+;; example:
+;; (piece-height-collumn #2A((NIL T) (NIL T) (T T)) 0)
+;; 2
+;;
+;; TESTADO
+(defun piece-height-collumn (peca collumn)
+	(let ((result 0))
+		(block conditions
+			(loop for line from 0 to (1- NUM-LINES) do
+				(when (eq t (aref peca line collumn))
+					(setf result line)
+					(return-from conditions)
+				)
+			)
+		)
+		
+		result
+	)
+)
+
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -275,31 +301,35 @@
 ;; Places a ACCAO (num-coluna, peca) in the tabuleiro. 
 ;; In other words, applies an ACCAO to the TABULEIRO.
 ;; PARECE FUNCIONAR BEM
-;; (defun tabuleiro-coloca-peca! (tabuleiro accao)
-;; 	(let ((coluna-inicial (first accao)) (peca (accao-peca accao)) (tab-floor 0))
-;; 		(block conditions
-;; 			(dotimes (collumn (array-dimension peca 1))
-;; 				(when (eq t (aref peca 0 collumn))
-;; 					(setf tab-floor (tabuleiro-altura-coluna tabuleiro collumn))
-;; 				)
-;; 			)
-;; 		)
-;; 		
-;; 		tab-floor
-;; 		
-;; 		(dotimes (line (array-dimension peca 0))
-;; 			(dotimes (collumn (array-dimension peca 1))
-;; 				(when (eq (aref peca line collumn) t)
-;; 						(tabuleiro-preenche! 
-;; 							tabuleiro 
-;; 							(+ line (tabuleiro-altura-coluna tabuleiro (+ coluna-inicial collumn)))
-;; 							(+ coluna-inicial collumn)
-;; 						)
-;; 				)
-;; 			)
-;; 		)
-;; 	)
-;; )
+(defun tabuleiro-coloca-peca! (tabuleiro accao)
+	(let ((coluna-inicial (accao-coluna accao)) (peca (accao-peca accao)) (tab-floor 0) )
+		(block conditions
+			(dotimes (collumn (array-dimension peca 1))
+				
+				(when (> (tabuleiro-altura-coluna tabuleiro (+ coluna-inicial collumn)) tab-floor)
+				
+					
+					
+					(setf tab-floor (- (tabuleiro-altura-coluna tabuleiro (+ coluna-inicial collumn)) (piece-height-collumn peca collumn)))
+				)
+			)
+		)
+		
+		(dotimes (line (array-dimension peca 0))
+			(dotimes (collumn (array-dimension peca 1))
+				(when (eq (aref peca line collumn) t)
+						(tabuleiro-preenche! 
+							tabuleiro 
+							(+ line tab-floor)
+							(+ coluna-inicial collumn)
+						)
+				)
+			)
+		)
+		
+		tabuleiro
+	)
+)
 
   
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -768,22 +798,27 @@
 ;; resulting of applying parameter ACCAO to parameter ESTADO. 
 ;; 
 ;; 
-;; (defun resultado (estado accao)
-;; 	(let ((result (make-estado)) (tabuleiro (copia-tabuleiro (estado-tabuleiro estado))))
-;; 		(setf (estado-pecas-por-colocar result) (rest (estado-pecas-por-colocar estado)))
-;; 		
-;; 		(if (null (estado-pecas-colocadas estado))
-;; 			(setf (estado-pecas-colocadas result) (list (get-symbol (accao-peca accao))))
-;; 			(setf (estado-pecas-colocadas result) (append (estado-pecas-colocadas estado) (list (get-symbol (accao-peca accao)))))
-;; 		)
-;; 		
-;; 		(tabuleiro-coloca-peca! tabuleiro accao) 
-;; 		
-;; 		(setf (estado-tabuleiro result)  tabuleiro)
-;; 	
-;; 		result
-;; 	)
-;; )
+(defun resultado (estado accao)
+	(let ((result (make-estado)) (tabuleiro (copia-tabuleiro (estado-tabuleiro estado))))
+		(setf (estado-pecas-por-colocar result) (rest (estado-pecas-por-colocar estado)))
+		
+		(if (null (estado-pecas-colocadas estado))
+			(setf (estado-pecas-colocadas result) (list (get-symbol (accao-peca accao))))
+			(setf (estado-pecas-colocadas result) (append (estado-pecas-colocadas estado) (list (get-symbol (accao-peca accao)))))
+		)
+		
+		(tabuleiro-coloca-peca! tabuleiro accao) 
+		
+		(setf (estado-tabuleiro result)  tabuleiro)
+		
+		(if ()
+			()
+			()
+		)
+	
+		result
+	)
+)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -825,6 +860,6 @@
 
 
 ;; ###########################################
-;; (load (compile-file "utils.lisp"))
-(load "utils.fas") 
+(load (compile-file "utils.lisp"))
+;; (load "utils.fas") 
 ;  ###########################################
