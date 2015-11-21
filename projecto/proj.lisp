@@ -803,8 +803,8 @@
 		(setf (estado-pecas-por-colocar result) (rest (estado-pecas-por-colocar estado)))
 		
 		(if (null (estado-pecas-colocadas estado))
-			(setf (estado-pecas-colocadas result) (list (get-symbol (accao-peca accao))))
-			(setf (estado-pecas-colocadas result) (append (estado-pecas-colocadas estado) (list (get-symbol (accao-peca accao)))))
+			(setf (estado-pecas-colocadas result) (list (first (estado-pecas-por-colocar estado))))
+			(setf (estado-pecas-colocadas result) (cons (first (estado-pecas-por-colocar estado)) (estado-pecas-colocadas estado)))
 		)
 		
 		(tabuleiro-coloca-peca! tabuleiro accao) 
@@ -876,6 +876,7 @@
 
 
 ;; ###########################################
+(load (compile-file "dfs.lisp"))
 (load (compile-file "utils.lisp"))
 ;; (load "utils.fas") 
 ;  ###########################################

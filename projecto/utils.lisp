@@ -152,5 +152,5 @@
 	(make-problema :estado-inicial (make-estado :tabuleiro t1 :pecas-por-colocar '(i o j l t i))
 				 :solucao #'solucao
 				   :accoes #'accoes
-;; 				   :resultado #'resultado
+				   :resultado #'resultado
 				   :custo-caminho #'custo-oportunidade))
