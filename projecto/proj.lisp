@@ -569,10 +569,10 @@
 ;;
 ;; TABULEIRO: the game table, of type 'tabuleiro'.
 (defstruct estado 
-			(pontos 0) ;;----------------------inteiro
-			(pecas-por-colocar  '());;-----------lista
+			(pontos 0) ;;-----------------------inteiro
+			(pecas-por-colocar  '());;----------lista
 			(pecas-colocadas '());;-------------lista
-			(tabuleiro (cria-tabuleiro));;-------------------tipo tabuleiro
+			(tabuleiro (cria-tabuleiro));;------tipo tabuleiro
 )
 
 
@@ -799,7 +799,7 @@
 ;; 
 ;; 
 (defun resultado (estado accao)
-	(let ((result (make-estado)) (tabuleiro (copia-tabuleiro (estado-tabuleiro estado))))
+	(let ((result (make-estado)) (tabuleiro (copia-tabuleiro (estado-tabuleiro estado))) (lines-removed 0) (awarded-points 0))
 		(setf (estado-pecas-por-colocar result) (rest (estado-pecas-por-colocar estado)))
 		
 		(if (null (estado-pecas-colocadas estado))
@@ -811,11 +811,27 @@
 		
 		(setf (estado-tabuleiro result)  tabuleiro)
 		
-		(if ()
+		(if (tabuleiro-topo-preenchido-p (estado-tabuleiro result))
 			()
-			()
+			(dotimes (line NUM-LINES)
+				(when (tabuleiro-linha-completa-p (estado-tabuleiro result) line)
+					(incf lines-removed)
+					(tabuleiro-remove-linha! (estado-tabuleiro result) line)
+					(decf line)
+				)
+			)
 		)
-	
+		
+		(cond ((= lines-removed 0) (setf awarded-points 0))
+			  ((= lines-removed 1) (setf awarded-points 100))
+			  ((= lines-removed 2) (setf awarded-points 300))
+			  ((= lines-removed 3) (setf awarded-points 500))
+			  ((= lines-removed 4) (setf awarded-points 800))
+			  (t (setf awarded-points 800))
+		)
+		
+		(setf (estado-pontos result) (+ (estado-pontos estado) awarded-points))
+		
 		result
 	)
 )
