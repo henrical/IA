@@ -141,10 +141,10 @@
 			
 ;;exemplo muito simples de um tabuleiro com a primeira e segunda linha quase todas preenchidas
 (defvar t1 (cria-tabuleiro))
-(dotimes (coluna 9)
-	(tabuleiro-preenche! t1 0 coluna))
-(dotimes (coluna 9)
-	(tabuleiro-preenche! t1 1 coluna))
+;; (dotimes (coluna 9)
+;; 	(tabuleiro-preenche! t1 0 coluna))
+;; (dotimes (coluna 9)
+;; 	(tabuleiro-preenche! t1 1 coluna))
 (defvar e1 (make-estado :tabuleiro t1 :pecas-por-colocar '(i o j l t i)))
 
 

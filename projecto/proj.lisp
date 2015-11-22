@@ -841,7 +841,7 @@
 ;; QUALIDADE
 ;; Receives a ESTADO and returns an integer corresponding to 
 ;; the number of points in ESTADO multiplied by -1. 
-;; 
+;; Default heuristic function.
 ;;
 (defun qualidade (estado)
 	(* -1 (estado-pontos estado))
