@@ -148,7 +148,7 @@
 	(let ((stack-estados (create-stack)) ;;----------------------------------
 		  (estado-actual) ;;-----------------------------------------
 		  (lista-accoes-estado-actual ) ;;----------------------------
-;; 		  (stack-accoes (create-stack)) ;;------------------------------------------
+		  (stack-accoes (create-stack)) ;;------------------------------------------
 		  (caminho-resultado '())) ;;--------------------------------------
 		  
 		(stack-push! stack-estados (problema-estado-inicial problema)) ;;----
@@ -165,51 +165,33 @@
 				
 				(setf estado-actual (stack-pop! stack-estados))
 				
-				(if (funcall (problema-solucao problema) estado-actual) ;;--------------- Se o estado é solucao:
+				(if (stack-empty-p stack-accoes)
+					()
+					(setf caminho-resultado (append caminho-resultado (list (stack-pop! stack-accoes))))
+				)
+				
+				
+				(if (funcall (problema-solucao problema) estado-actual) 
 					
+					;; Se o estado é solucao:
 					(progn
 						(print "ESTADO SOLUCAO.")
-					
-;; 						(if (stack-empty-p stack-accoes)
-;; 							()
-;; 							(setf caminho-resultado
-;; 								(append caminho-resultado (list (stack-pop! stack-accoes))) ;; Poe a ultima accao efectuada
-;; 							)														;; no caminho
-;; 						)
-
-						(if (null lista-accoes)
-							()
-							(setf caminho-resultado (append caminho-resultado (list (first lista-accoes))))
-						)
 						
 						(return-from main-loop) ;;--------------------------------------- Termina o ciclo.
 					)
 
 					
-					
-					(progn ;;------------------------------------------------------------ Se o estado nao é solucao:
+					;; Se o estado nao é solucao:
+					(progn 
 						
-						(print "EXPANDE NO.")
-
-;; 						(if (stack-empty-p stack-accoes)
-;; 							()
-;; 							(setf caminho-resultado
-;; 									(append caminho-resultado (list (stack-pop! stack-accoes))) ;; Poe a ultima accao efectuada
-;; 							)															;; no caminho
-;; 						)
-
-						(if (null lista-accoes)
-							()
-							(setf caminho-resultado (append caminho-resultado (list (first lista-accoes))))
-						)
+						(print "EXPANDE NO.")	
+						
+						(setf lista-accoes-estado-actual (funcall (problema-accoes problema) estado-actual))
 						
 						
-						
-						(setf lista-accoes (funcall (problema-accoes problema) estado-actual))
-						
-						
-						(dolist (accao lista-accoes)
-							(stack-push! stack-estados (resultado estado-actual accao))  
+						(dolist (accao lista-accoes-estado-actual)
+							(stack-push! stack-estados (resultado estado-actual accao))
+							(stack-push! stack-accoes accao)
 						)
 					)
 					

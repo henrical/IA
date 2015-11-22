@@ -311,6 +311,7 @@
 					
 					
 					(setf tab-floor (- (tabuleiro-altura-coluna tabuleiro (+ coluna-inicial collumn)) (piece-height-collumn peca collumn)))
+
 				)
 			)
 		)
@@ -345,8 +346,8 @@
 				(setf max-altura line)
 			)
 		)
-		;; Return:
-		(if (zerop max-altura)
+		;; Return
+		(if (= 0 max-altura)
 			max-altura
 			(1+ max-altura)
 		)

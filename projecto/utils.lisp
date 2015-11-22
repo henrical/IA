@@ -148,8 +148,8 @@
 (defvar e1 (make-estado :tabuleiro t1 :pecas-por-colocar '(i o j l t i)))
 
 
-(defvar p1
-	(make-problema :estado-inicial (make-estado :tabuleiro t1 :pecas-por-colocar '(i o j l t i))
+(setf p1
+	(make-problema :estado-inicial (make-estado :tabuleiro t1 :pecas-por-colocar '(i t o s i z i j l ))
 				 :solucao #'solucao
 				   :accoes #'accoes
 				   :resultado #'resultado
