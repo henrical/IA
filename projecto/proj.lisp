@@ -344,20 +344,23 @@
 (defun tabuleiro-altura-coluna ( tabuleiro num-coluna)
 	(let ((max-altura 0))
 	
-		(when (eq (aref tabuleiro 0 num-coluna) POSITION-EMPTY)
-			(return-from tabuleiro-altura-coluna 0)
-		)
+;; 		(when (eq (aref tabuleiro 0 num-coluna) POSITION-EMPTY)
+;; 			(return-from tabuleiro-altura-coluna 0)
+;; 		)
 	
 		(dotimes (line NUM-LINES)
 			(when (eq (aref tabuleiro line num-coluna) POSITION-FILLED)
-				(setf max-altura line)
+				(if (not (zerop line))
+					(setf max-altura line)
+					(setf max-altura 1)
+				)
 			)
 		)
 		;; Return
-;; 		(if (= 0 max-altura)
-;; 			max-altura
+		(if (= 0 max-altura)
+			0
 			(1+ max-altura)
-;; 		)
+		)
 	)
 )
 
@@ -887,14 +890,14 @@
 	)
 )
 
-;;###################################################################################################
-;;###################################################################################################
-;;##################################### ALGORITMOS DA 2º ENTREGA ####################################
-;;###################################################################################################
-;;###################################################################################################
+;;#################################################################################################
+;;#################################################################################################
+;;################################### ALGORITMOS DA SEGUNDA ENTREGA ###############################
+;;#################################################################################################
+;;#################################################################################################
 
-;; Algoritmos da 2ª entrega : DFS (procura-pp), A* e RBFS (recursive best first)
-;; Estruturas de dados acicionais.
+;; Algoritmos da segunda entrega : DFS (procura-pp), A* e RBFS (recursive best first)
+;; Estruturas de dados adicionais.
 
 
 ;;###################################################          
@@ -906,7 +909,7 @@
 ;; Attributes: 
 ;; - THIS: the stack itself. A list that contains the
 ;;   the elements of the stack.
-;;
+;; 
 ;; - POINTER: an integer that points to the top of 
 ;; the stack.
 ;;
@@ -999,7 +1002,7 @@
 ;; Implementation of the depth first search 
 ;; algorithm.
 ;; 
-;; ==============================================
+;;#####################################################
 ;; Parameters:
 ;; 
 ;; PROBLEMA
@@ -1007,7 +1010,7 @@
 ;; Estrutura com os seguintes atributos.
 ;; 	-ESTADO-INICIAL: o estado inicial da 
 ;; 	procura. E inserido na stack no inicio e a 
-;; 	procura é feita a partir dai.
+;; 	procura e feita a partir dai.
 ;;
 ;;  -SOLUCAO(estado): funcao teste-objectivo.
 ;;  E usada em todos os nos para testarem se sao 
@@ -1031,18 +1034,18 @@
 ;; Para chamar uma funcao de uma variavel PROBLEMA
 ;; "prob":
 ;; (funcall (problema-solucao prob) estado1)
-;; ==============================================
+;;##################################################
 ;;
 ;; Devolve uma lista com todas as accoes efectuadas
 ;; desde o estado inicial ate ao estado objectivo.
 
 
-(defun dfs (problema)
+(defun procura-pp (problema)
 	
-	;;========================= DECLARACOES DE VARIAVEIS ========================================== 
+	;;################################ DECLARACOES DE VARIAVEIS ###############################################
 	
 	(let ((stack-estados (create-stack)) ;;-------------------------------- stack onde sao guardados os estados.
-		  (estado-actual) ;;----------------------------------------------- estado a ser explorado na iteraçao actual.
+		  (estado-actual) ;;----------------------------------------------- estado a ser explorado na iteracao actual.
 		  
 		  (stack-accoes (create-stack)) ;;---------------------------------  stack onde sao guardadas as accoes tomadas
 																		  ;; por exemplo quando se insere um estado na stack
@@ -1055,7 +1058,7 @@
 																			
 		  (caminho-resultado '())) ;;-------------------------------------- guarda o caminho actual tomado (lista de accoes)
 		  
-	;;========================== FIM DE DECLARACOES ===============================================#  
+	;;################################# FIM DE DECLARACOES ####################################################  
 		 
 		 
 		(stack-push! stack-estados (problema-estado-inicial problema)) ;;-- poe o estado inicial na pilha
@@ -1072,7 +1075,7 @@
 				(setf estado-actual (stack-pop! stack-estados)) ;;--------- vai buscar o proximo estado a ser explorado a stack.
 				
 				(if (stack-empty-p stack-accoes) ;;------------------------  este if serve apenas para nao ir buscar a ultima
-																		  ;; accao na primeira iteraçao (ainda nao ha accoes 
+																		  ;; accao na primeira iteracao (ainda nao ha accoes 
 																		  ;; tomadas no inicio).
 					()
 					
@@ -1084,15 +1087,15 @@
 				)
 				
 				
-				(if (funcall (problema-solucao problema) estado-actual) ;;- testa se o estado actual é solucao
+				(if (funcall (problema-solucao problema) estado-actual) ;; testa se o estado actual e solucao
 					
-					;;--------------------------------------------------- se o estado é solucao:
+					;;--------------------------------------------------- se o estado e solucao:
 					(progn
 						(return-from main-loop) ;;----------------------- Termina o algoritmo e retorna o caminho.
 					)
 
 					
-					;;--------------------------------------------------- se o estado nao é solucao:
+					;;--------------------------------------------------- se o estado nao e solucao:
 					(progn 
 						;; determina a lista de accoes possiveis
 						;; a partir do estado actual 
@@ -1121,7 +1124,6 @@
 
 
 ;; ###########################################
-(load (compile-file "dfs.lisp"))
 (load (compile-file "utils.lisp"))
 ;; (load "utils.fas") 
 ;  ###########################################
