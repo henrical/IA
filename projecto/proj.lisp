@@ -311,6 +311,8 @@
 					
 					
 					(setf tab-floor (- (tabuleiro-altura-coluna tabuleiro (+ coluna-inicial collumn)) (piece-height-collumn peca collumn)))
+					
+;; 					(when (= (tabuleiro-altura-coluna tabuleiro (+ coluna-inicial collumn)))
 
 				)
 			)
@@ -341,16 +343,21 @@
 ;; TESTADO
 (defun tabuleiro-altura-coluna ( tabuleiro num-coluna)
 	(let ((max-altura 0))
+	
+		(when (eq (aref tabuleiro 0 num-coluna) POSITION-EMPTY)
+			(return-from tabuleiro-altura-coluna 0)
+		)
+	
 		(dotimes (line NUM-LINES)
 			(when (eq (aref tabuleiro line num-coluna) POSITION-FILLED)
 				(setf max-altura line)
 			)
 		)
 		;; Return
-		(if (= 0 max-altura)
-			max-altura
+;; 		(if (= 0 max-altura)
+;; 			max-altura
 			(1+ max-altura)
-		)
+;; 		)
 	)
 )
 
@@ -776,18 +783,24 @@
 ;; TESTADO
 (defun accoes (estado)
 	(let ((result) (configurations))
-		(setf configurations (get-configurations (estado-pecas-por-colocar estado)))
+	
+;; 		(block body
+			(when (estado-final-p estado)
+				(return-from accoes nil)
+			)
+				
+			(setf configurations (get-configurations (estado-pecas-por-colocar estado)))
 		
-		(dolist (elem configurations)
-			(loop for collumn from 0 to  (1- NUM-COLLUMNS) do
-				(when (>= NUM-COLLUMNS (+ collumn (piece-width elem)))
-					(setf result (append result (list (cria-accao collumn elem))))
-;; 					(print (cria-accao collumn elem))
+			(dolist (elem configurations)
+				(loop for collumn from 0 to  (1- NUM-COLLUMNS) do
+					(when (>= NUM-COLLUMNS (+ collumn (piece-width elem)))
+						(setf result (append result (list (cria-accao collumn elem))))
+;; 						(print (cria-accao collumn elem))
+					)
 				)
 			)
-		)
-		result
-		
+			result
+;; 		)
 	)
 )
 
@@ -871,6 +884,237 @@
 		)
 		
 		(- result (estado-pontos estado))
+	)
+)
+
+;;###################################################################################################
+;;###################################################################################################
+;;##################################### ALGORITMOS DA 2º ENTREGA ####################################
+;;###################################################################################################
+;;###################################################################################################
+
+;; Algoritmos da 2ª entrega : DFS (procura-pp), A* e RBFS (recursive best first)
+;; Estruturas de dados acicionais.
+
+
+;;###################################################          
+;;################## STACK (pilha) ##################
+;;###################################################
+;; STACK structure that allows push and pop 
+;; operations.
+;;
+;; Attributes: 
+;; - THIS: the stack itself. A list that contains the
+;;   the elements of the stack.
+;;
+;; - POINTER: an integer that points to the top of 
+;; the stack.
+;;
+(defstruct stack 
+				(this '())
+				(pointer 0)
+)
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; CREATE-STACK
+;; Returns an empty stack.
+;;
+(defun create-stack ()
+	(make-stack)
+)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; STACK-EMPTY-P 
+;; Returns true if stack is empty.
+;;
+(defun stack-empty-p (stack)
+	(if (= (stack-pointer stack) 0)
+		t
+		nil
+	)
+)
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; STACK-PUSH!
+;; Pushes an element onto the top of the stack.
+;;
+(defun stack-push! (stack elem)
+	(if (stack-empty-p stack)
+		(progn
+			(setf (stack-this stack) (list elem))
+			(incf (stack-pointer stack))
+		)
+		(progn
+			(setf (stack-this stack) (cons elem (stack-this stack)))
+			(incf (stack-pointer stack))
+		)
+	)
+)
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; STACK-POP!
+;; Returns the element at the top of the stack.
+;;
+(defun stack-pop! (stack)
+	(let ((result))
+		(if (stack-empty-p stack)
+			(setf result nil)
+			(progn
+				(setf result (first (stack-this stack)))
+				(setf (stack-this stack) (rest (stack-this stack)))
+				(decf (stack-pointer stack))
+			)
+		)
+		
+		;;return
+		result
+	)
+)
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; CREATE-STACK-FROM-LIST
+;; Returns a stack containing the elements of a given list.
+;;
+(defun create-stack-from-list (lst)
+	(let ((result (create-stack)))
+		(setf (stack-this result) lst)
+		(setf (stack-pointer result) (list-length lst))
+		
+		result
+	)
+)
+
+;;#####################################################         
+;;##################### ALGORITHM #####################
+;;#####################################################
+;; Implementation of the depth first search 
+;; algorithm.
+;; 
+;; ==============================================
+;; Parameters:
+;; 
+;; PROBLEMA
+;;
+;; Estrutura com os seguintes atributos.
+;; 	-ESTADO-INICIAL: o estado inicial da 
+;; 	procura. E inserido na stack no inicio e a 
+;; 	procura é feita a partir dai.
+;;
+;;  -SOLUCAO(estado): funcao teste-objectivo.
+;;  E usada em todos os nos para testarem se sao 
+;;  solucao do problema.
+;; 
+;;  -ACCOES(estado): funcao que devolve uma lista
+;;  com todas as accoes possiveis de efectuar a 
+;;  partir do estado actual.
+;;
+;;  -RESULTADO(estado, accao): funcao que aplicada 
+;;  a um estado, recebe uma accao e devolve um novo
+;;  estado resultante de aplicar a accao ao estado 
+;;  dado. 
+;;
+;;  -CUSTO-CAMINHO(estado): funcao que devolve o 
+;;  numero maximo de pontos possiveis de ter sido 
+;;  obtidos num dado estado.
+;;  E o equivalente ao custo de caminho num dado 
+;;  estado.
+;;
+;; Para chamar uma funcao de uma variavel PROBLEMA
+;; "prob":
+;; (funcall (problema-solucao prob) estado1)
+;; ==============================================
+;;
+;; Devolve uma lista com todas as accoes efectuadas
+;; desde o estado inicial ate ao estado objectivo.
+
+
+(defun dfs (problema)
+	
+	;;========================= DECLARACOES DE VARIAVEIS ========================================== 
+	
+	(let ((stack-estados (create-stack)) ;;-------------------------------- stack onde sao guardados os estados.
+		  (estado-actual) ;;----------------------------------------------- estado a ser explorado na iteraçao actual.
+		  
+		  (stack-accoes (create-stack)) ;;---------------------------------  stack onde sao guardadas as accoes tomadas
+																		  ;; por exemplo quando se insere um estado na stack
+										                                  ;; e tambem inserida nesta stack a accao que levou 
+										                                  ;; a esse estado.
+										                                  
+		  (lista-accoes-estado-actual ) ;;---------------------------------  lista temporario para guardar todos as accoes 
+																		  ;; possiveis de efectuar sobre um estado.
+																		  ;; (retorno da funcao ACCOES(estado))
+																			
+		  (caminho-resultado '())) ;;-------------------------------------- guarda o caminho actual tomado (lista de accoes)
+		  
+	;;========================== FIM DE DECLARACOES ===============================================#  
+		 
+		 
+		(stack-push! stack-estados (problema-estado-inicial problema)) ;;-- poe o estado inicial na pilha
+		
+		(block main-loop
+		
+			(loop do ;;---------------------------------------------------- ciclo principal
+			
+				(when (stack-empty-p stack-estados) ;;--------------------- se encontrar a stack vazia, nao existe solucao.
+					(setf caminho-resultado nil) ;;------------------------ poe o resultado a nulo
+					(return-from main-loop) ;;----------------------------- sai do ciclo
+				) 
+				
+				(setf estado-actual (stack-pop! stack-estados)) ;;--------- vai buscar o proximo estado a ser explorado a stack.
+				
+				(if (stack-empty-p stack-accoes) ;;------------------------  este if serve apenas para nao ir buscar a ultima
+																		  ;; accao na primeira iteraçao (ainda nao ha accoes 
+																		  ;; tomadas no inicio).
+					()
+					
+					;; poe a ultima accao tomada no caminho.
+					(setf caminho-resultado ( 
+						append caminho-resultado (list (stack-pop! stack-accoes)))
+					)
+					
+				)
+				
+				
+				(if (funcall (problema-solucao problema) estado-actual) ;;- testa se o estado actual é solucao
+					
+					;;--------------------------------------------------- se o estado é solucao:
+					(progn
+						(return-from main-loop) ;;----------------------- Termina o algoritmo e retorna o caminho.
+					)
+
+					
+					;;--------------------------------------------------- se o estado nao é solucao:
+					(progn 
+						;; determina a lista de accoes possiveis
+						;; a partir do estado actual 
+						(setf lista-accoes-estado-actual 
+							(funcall (problema-accoes problema) estado-actual)
+						)
+						
+						;; expande o estado actual, adicionando todos os estados possiveis a stack.
+						(dolist (accao lista-accoes-estado-actual) 
+							(stack-push! stack-estados (resultado estado-actual accao))
+							(stack-push! stack-accoes accao)
+						)
+					)
+					
+				)
+			
+			)
+			
+		)
+		
+		caminho-resultado ;;----------------------------------------------- retorna o caminho obtido.
+																		 ;; e nil caso nao tenho encontrado solucao. 
 	)
 )
 
