@@ -1046,17 +1046,19 @@
 	
 	(let ((stack-estados (create-stack)) ;;-------------------------------- stack onde sao guardados os estados.
 		  (estado-actual) ;;----------------------------------------------- estado a ser explorado na iteracao actual.
-		  
-		  (stack-accoes (create-stack)) ;;---------------------------------  stack onde sao guardadas as accoes tomadas
-																		  ;; por exemplo quando se insere um estado na stack
-										                                  ;; e tambem inserida nesta stack a accao que levou 
-										                                  ;; a esse estado.
 										                                  
 		  (lista-accoes-estado-actual ) ;;---------------------------------  lista temporario para guardar todos as accoes 
 																		  ;; possiveis de efectuar sobre um estado.
 																		  ;; (retorno da funcao ACCOES(estado))
-																			
+					
+		  (mapa-estado-accao (make-hash-table)) ;;------------------------- hash table que mapeia um estado a accao que levou a ele
+		  (mapa-estado-antecessor (make-hash-table))
+	
+		  (estado-resultado)			
+					
 		  (caminho-resultado '())) ;;-------------------------------------- guarda o caminho actual tomado (lista de accoes)
+		  
+		  
 		  
 	;;################################# FIM DE DECLARACOES ####################################################  
 		 
@@ -1073,18 +1075,6 @@
 				) 
 				
 				(setf estado-actual (stack-pop! stack-estados)) ;;--------- vai buscar o proximo estado a ser explorado a stack.
-				
-				(if (stack-empty-p stack-accoes) ;;------------------------  este if serve apenas para nao ir buscar a ultima
-																		  ;; accao na primeira iteracao (ainda nao ha accoes 
-																		  ;; tomadas no inicio).
-					()
-					
-					;; poe a ultima accao tomada no caminho.
-					(setf caminho-resultado ( 
-						append caminho-resultado (list (stack-pop! stack-accoes)))
-					)
-					
-				)
 				
 				
 				(if (funcall (problema-solucao problema) estado-actual) ;; testa se o estado actual e solucao
@@ -1103,10 +1093,16 @@
 							(funcall (problema-accoes problema) estado-actual)
 						)
 						
+						
 						;; expande o estado actual, adicionando todos os estados possiveis a stack.
 						(dolist (accao lista-accoes-estado-actual) 
-							(stack-push! stack-estados (resultado estado-actual accao))
-							(stack-push! stack-accoes accao)
+							(setf estado-resultado (resultado estado-actual accao))
+						
+							(stack-push! stack-estados estado-resultado)
+							
+							(setf (gethash estado-resultado mapa-estado-accao) accao)
+							(setf (gethash estado-resultado mapa-estado-antecessor) estado-actual)
+							
 						)
 					)
 					
@@ -1116,6 +1112,25 @@
 			
 		)
 		
+		;;determinar caminho
+		(block determinacao-caminho
+		
+			(loop do
+				
+				(when (null estado-actual)
+					(return-from determinacao-caminho)
+				)
+				
+				(when (not (null (gethash estado-actual mapa-estado-accao)))
+					(setf caminho-resultado (cons (gethash estado-actual mapa-estado-accao) caminho-resultado))
+				)
+				
+				(setf estado-actual (gethash estado-actual mapa-estado-antecessor))
+			)
+		
+		)
+	
+		
 		caminho-resultado ;;----------------------------------------------- retorna o caminho obtido.
 																		 ;; e nil caso nao tenho encontrado solucao. 
 	)
@@ -1123,7 +1138,9 @@
 
 
 
+
+
 ;; ###########################################
-(load (compile-file "utils.lisp"))
-;; (load "utils.fas") 
+;; (load (compile-file "utils.lisp"))
+(load "utils.fas") 
 ;  ###########################################
