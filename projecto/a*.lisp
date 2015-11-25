@@ -47,40 +47,60 @@
 ;;
 (defun stack-ordered-push! (stack elem custo heuristica)
 	(let ((new-elem-value (+ (funcall custo elem) (funcall heuristica elem)))
-		  (curr-elem-val (+ (funcall custo curr-elem) (funcall heuristica curr-elem)))
+		  
 		  (stack-pre-list '())
 		  (stack-post-list (stack-this stack))
-		  (curr-elem (first stack-post-list))
+		  
+		  (curr-elem (first (stack-this stack)))
+		  
 		  (result '())
 		 )
+		 (let ((curr-elem-value))
 	
-		(if (stack-empty-p stack)
-			(progn
-				(setf (stack-this stack) (list elem))
-				(incf (stack-pointer stack))
-			)
-			(progn
+			(if (stack-empty-p stack)
+				(progn
+					(setf result (list elem))
+				)
+				(progn
 		
-				(block insertion-loop
-					(loop do
+					(block main-loop
+						(loop do
 					
-						(if (<= new-elem-value curr-elem-value)
-							(progn
-								(setf result (append (reverse stack-pre-list) (cons elem stack-post-list))) 
+							(when (null curr-elem)
+								(setf result (append (reverse stack-pre-list) (list elem )))
+								(return-from main-loop)
 							)
-							(progn
-								(setf stack-pre-list (cons curr-elem stack-pre-list))
-								(setf stack-post-list (rest stack-post-list))
+					
+							(setf curr-elem-value (+ (funcall custo curr-elem) (funcall heuristica curr-elem)))
+					
+;; 							(return-from main-loop stack-pre-list)
+							
+							
+					
+							(if (<= new-elem-value curr-elem-value)
+								(progn
+									(setf result (append (reverse stack-pre-list) (cons elem stack-post-list))) 
+									(return-from main-loop)
+								)
+								(progn
+									(setf stack-pre-list (cons curr-elem stack-pre-list))
+									(setf stack-post-list (rest stack-post-list))
 								
-								(setf curr-elem (first stack-post-list))
-								(setf curr-elem-val (+ (funcall custo curr-elem) (funcall heuristica curr-elem)))
-							)
-						)
+									(setf curr-elem (first stack-post-list))
+								)
+							)	
 					
 						
+						)
 					)
+					
 				)
+				
 			)
+		
+		(incf (stack-pointer stack))
+		(setf (stack-this stack) result)
+		
 		)
 	)
 )
