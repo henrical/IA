@@ -100,29 +100,115 @@
 		
 		(incf (stack-pointer stack))
 		(setf (stack-this stack) result)
+		t
 		
 		)
 	)
 )
 
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; STACK-POP!
-;; Returns the element at the top of the stack.
-;;
-;; (defun stack-pop! (stack)
-;; 	(let ((result))
-;; 		(if (stack-empty-p stack)
-;; 			(setf result nil)
-;; 			(progn
-;; 				(setf result (first (stack-this stack)))
-;; 				(setf (stack-this stack) (rest (stack-this stack)))
-;; 				(decf (stack-pointer stack))
-;; 			)
-;; 		)
-;; 		
-;; 		;;return
-;; 		result
-;; 	)
-;; )
+(defun procura-A* (problema heuristica)
+	
+	;;################################ DECLARACOES DE VARIAVEIS ###############################################
+	
+	(let ((stack-estados (create-stack)) ;;-------------------------------- stack onde sao guardados os estados.
+		  (estado-actual) ;;----------------------------------------------- estado a ser explorado na iteracao actual.
+										                                  
+		  (lista-accoes-estado-actual ) ;;---------------------------------  lista temporario para guardar todos as accoes 
+																		  ;; possiveis de efectuar sobre um estado.
+																		  ;; (retorno da funcao ACCOES(estado))
+					
+		  (mapa-estado-accao (make-hash-table)) ;;------------------------- hash table que mapeia um estado a accao que levou a ele
+		  (mapa-estado-antecessor (make-hash-table))
+	
+		  (estado-resultado)			
+					
+		  (caminho-resultado '())) ;;-------------------------------------- guarda o caminho actual tomado (lista de accoes)
+		  
+		  
+		  
+	;;################################# FIM DE DECLARACOES ####################################################  
+		 
+		 
+		(stack-ordered-push! stack-estados (problema-estado-inicial problema) (problema-custo-caminho problema) heuristica)
+		
+		(block main-loop
+			
+			(loop do ;;---------------------------------------------------- ciclo principal
+;; 				(print "loop principal.")
+				(when (stack-empty-p stack-estados) ;;--------------------- se encontrar a stack vazia, nao existe solucao.
+					(setf caminho-resultado nil) ;;------------------------ poe o resultado a nulo
+					(return-from main-loop) ;;----------------------------- sai do ciclo
+				) 
+				
+				
+				(setf estado-actual (stack-pop! stack-estados)) ;;--------- vai buscar o proximo estado a ser explorado a stack.
+				
+;; 				(print estado-actual)
+				
+;; 				(print (estado-pecas-por-colocar estado-actual))
+				
+				(if (funcall (problema-solucao problema) estado-actual) ;; testa se o estado actual e solucao
+					
+					;;--------------------------------------------------- se o estado e solucao:
+					(progn
+						(return-from main-loop) ;;----------------------- Termina o algoritmo e retorna o caminho.
+					)
+					
+					
+					;;--------------------------------------------------- se o estado nao e solucao:
+					(progn 
+;; 						(print "Estado nao é solucao.")
+					
+						;; determina a lista de accoes possiveis
+						;; a partir do estado actual 
+						(setf lista-accoes-estado-actual 
+							(funcall (problema-accoes problema) estado-actual)
+						)
+						
+;; 						(print "Stack:")
+;; 						(print lista-accoes-estado-actual)
+						
+						;; expande o estado actual, adicionando todos os estados possiveis a stack.
+						(dolist (accao lista-accoes-estado-actual) 
+							(setf estado-resultado (resultado estado-actual accao))
+						
+							(stack-ordered-push! stack-estados estado-resultado (problema-custo-caminho problema) heuristica)
+							
+							(setf (gethash estado-resultado mapa-estado-accao) accao)
+							(setf (gethash estado-resultado mapa-estado-antecessor) estado-actual)
+							
+						)
+						
+;; 						(read-char)
+					)
+					
+				)
+			
+			)
+			
+		)
+		
+;; 		(print "determinacao caminho.")
+		;;determinar caminho
+		(block determinacao-caminho
+		
+			(loop do
+				
+				(when (null estado-actual)
+					(return-from determinacao-caminho)
+				)
+				
+				(when (not (null (gethash estado-actual mapa-estado-accao)))
+					(setf caminho-resultado (cons (gethash estado-actual mapa-estado-accao) caminho-resultado))
+				)
+				
+				(setf estado-actual (gethash estado-actual mapa-estado-antecessor))
+			)
+		
+		)
+	
+		
+		caminho-resultado ;;----------------------------------------------- retorna o caminho obtido.
+																		 ;; e nil caso nao tenho encontrado solucao. 
+	)
+)

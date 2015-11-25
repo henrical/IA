@@ -145,7 +145,7 @@
 ;; 	(tabuleiro-preenche! t1 0 coluna))
 ;; (dotimes (coluna 9)
 ;; 	(tabuleiro-preenche! t1 1 colunta))
-(defvar e1 (make-estado :pontos 0 :tabuleiro t1 :pecas-por-colocar '(i o j l t i)))
+(defvar e1 (make-estado :pontos 0 :tabuleiro t1 :pecas-por-colocar '(i o j)))
 (defvar e2 (make-estado :pontos 300 :tabuleiro t1 :pecas-por-colocar '(i o j l t i) :pecas-colocadas '(i j o l)))
 (defvar e3 (make-estado :pontos 100 :tabuleiro t1 :pecas-por-colocar '(i o j l t i) :pecas-colocadas '(i j)))
 (defvar e4 (make-estado :pontos 200 :tabuleiro t1 :pecas-por-colocar '(i o j l t i) :pecas-colocadas '(i j l o)))
@@ -153,7 +153,7 @@
 
 
 (defvar p1
-	(make-problema :estado-inicial (make-estado :tabuleiro t1 :pecas-por-colocar '(l j t s i z i i t o s i z i j l ))
+	(make-problema :estado-inicial (make-estado :tabuleiro t1 :pecas-por-colocar '(l j t))
 				 :solucao #'solucao
 				   :accoes #'accoes
 				   :resultado #'resultado
