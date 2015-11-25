@@ -1141,6 +1141,7 @@
 
 
 ;; ###########################################
-;; (load (compile-file "utils.lisp"))
-(load "utils.fas") 
+(load (compile-file "utils.lisp"))
+(load (compile-file "a*.lisp"))
+;; (load "utils.fas") 
 ;  ###########################################

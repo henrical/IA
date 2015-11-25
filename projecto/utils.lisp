@@ -144,7 +144,7 @@
 ;; (dotimes (coluna 9)
 ;; 	(tabuleiro-preenche! t1 0 coluna))
 ;; (dotimes (coluna 9)
-;; 	(tabuleiro-preenche! t1 1 coluna))
+;; 	(tabuleiro-preenche! t1 1 colunta))
 (defvar e1 (make-estado :tabuleiro t1 :pecas-por-colocar '(i o j l t i)))
 
 
