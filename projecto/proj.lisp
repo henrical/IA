@@ -1096,7 +1096,7 @@
 						
 						;; expande o estado actual, adicionando todos os estados possiveis a stack.
 						(dolist (accao lista-accoes-estado-actual) 
-							(setf estado-resultado (resultado estado-actual accao))
+							(setf estado-resultado (funcall (problema-resultado problema) estado-actual accao))
 						
 							(stack-push! stack-estados estado-resultado)
 							
@@ -1135,6 +1135,7 @@
 																		 ;; e nil caso nao tenho encontrado solucao. 
 	)
 )
+
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -1205,6 +1206,56 @@
 	)
 )
 
+
+;;#####################################################         
+;;##################### ALGORITHM #####################
+;;#####################################################
+;; Implementation of the A* search 
+;; algorithm.
+;; 
+;;#####################################################
+;; Parameters:
+;; 
+;; PROBLEMA
+;;
+;; Estrutura com os seguintes atributos.
+;; 	-ESTADO-INICIAL: o estado inicial da 
+;; 	procura. E inserido na stack no inicio e a 
+;; 	procura e feita a partir dai.
+;;
+;;  -SOLUCAO(estado): funcao teste-objectivo.
+;;  E usada em todos os nos para testarem se sao 
+;;  solucao do problema.
+;; 
+;;  -ACCOES(estado): funcao que devolve uma lista
+;;  com todas as accoes possiveis de efectuar a 
+;;  partir do estado actual.
+;;
+;;  -RESULTADO(estado, accao): funcao que aplicada 
+;;  a um estado, recebe uma accao e devolve um novo
+;;  estado resultante de aplicar a accao ao estado 
+;;  dado. 
+;;
+;;  -CUSTO-CAMINHO(estado): funcao que devolve o 
+;;  numero maximo de pontos possiveis de ter sido 
+;;  obtidos num dado estado.
+;;  E o equivalente ao custo de caminho num dado 
+;;  estado.
+;;
+;; Para chamar uma funcao de uma variavel PROBLEMA
+;; "prob":
+;; (funcall (problema-solucao prob) estado1)
+;;
+;;	
+;; HEURISTICA
+;; -Funcao de calculo do valor da heuristica de
+;; um estado.
+;;
+;;##################################################
+;;
+;; Devolve uma lista com todas as accoes efectuadas
+;; desde o estado inicial ate ao estado objectivo.
+;;
 (defun procura-A* (problema heuristica)
 	
 	;;################################ DECLARACOES DE VARIAVEIS ###############################################
@@ -1261,7 +1312,7 @@
 						
 						;; expande o estado actual, adicionando todos os estados possiveis a stack.
 						(dolist (accao lista-accoes-estado-actual) 
-							(setf estado-resultado (resultado estado-actual accao))
+							(setf estado-resultado (funcall (problema-resultado problema) estado-actual accao))
 						
 							(stack-ordered-push! stack-estados estado-resultado (problema-custo-caminho problema) heuristica)
 							
@@ -1303,7 +1354,9 @@
 
 
 
+
 ;; ###########################################
-(load (compile-file "utils.lisp"))
-;; (load "utils.fas") 
+;; (load (compile-file "utils.lisp"))
+;; (load (compile-file "rbfs.lisp"))
+(load "utils.fas") 
 ;  ###########################################
