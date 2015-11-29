@@ -149,7 +149,7 @@
 (defvar e2 (make-estado :pontos 300 :tabuleiro t1 :pecas-por-colocar '(i o j l t i) :pecas-colocadas '(i j o l)))
 (defvar e3 (make-estado :pontos 100 :tabuleiro t1 :pecas-por-colocar '(i o j l t i) :pecas-colocadas '(i j)))
 (defvar e4 (make-estado :pontos 200 :tabuleiro t1 :pecas-por-colocar '(i o j l t i) :pecas-colocadas '(i j l o)))
-(setf e5 (make-estado :pontos 0 :tabuleiro t1 :pecas-por-colocar '(i j l o t i) :pecas-colocadas '(i j)))
+;; (setf e5 (make-estado :pontos 0 :tabuleiro t1 :pecas-por-colocar '(i j l o t i) :pecas-colocadas '(i j)))
 
 
 (defvar p1

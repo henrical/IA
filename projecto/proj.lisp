@@ -393,7 +393,10 @@
 ;; TESTADO
 (defun tabuleiro-preenche! (tabuleiro num-linha num-coluna)
 	(if (and (>= num-linha 0) (< num-linha 18) (>= num-coluna 0) (< num-coluna 10))  
-		(setf (aref tabuleiro num-linha num-coluna) POSITION-FILLED)
+		(progn 
+			(setf (aref tabuleiro num-linha num-coluna) POSITION-FILLED)
+			t
+		)
 		() 
 	)
 )
@@ -1070,8 +1073,8 @@
 			(loop do ;;---------------------------------------------------- ciclo principal
 			
 				(when (stack-empty-p stack-estados) ;;--------------------- se encontrar a stack vazia, nao existe solucao.
-					(setf caminho-resultado nil) ;;------------------------ poe o resultado a nulo
-					(return-from main-loop) ;;----------------------------- sai do ciclo
+;; 					(setf caminho-resultado nil) ;;------------------------ poe o resultado a nulo
+					(return-from procura-pp nil) ;;----------------------------- sai do ciclo
 				) 
 				
 				(setf estado-actual (stack-pop! stack-estados)) ;;--------- vai buscar o proximo estado a ser explorado a stack.
@@ -1353,10 +1356,104 @@
 )
 
 
+;;#####################################################         
+;;##################### HEURISTIC #####################
+;;##################### FUNCTIONS #####################
+;;#####################################################
+
+;; HEURISTICA0: heuristica fraca e experimental. 
+;; Retorna as pecas por colocar.
+(defun heuristica0 (estado)
+	(length (estado-pecas-por-colocar estado))
+)
+
+;; HEURISTICA-H3: media das alturas das colunas.
+(defun heuristica-h3 (estado)
+	(let (
+		 (soma-alturas 0)
+		 )
+		 
+		 (dotimes (collumn NUM-COLLUMNS)
+			
+			(setf soma-alturas (+ soma-alturas (tabuleiro-altura-coluna (estado-tabuleiro estado) collumn)))
+		 )
+		 
+		 (/ soma-alturas NUM-COLLUMNS)
+	)
+)
+
+;; HEURISTICA-H7: soma pesada das alturas das colunas.
+;; testado
+(defun heuristica-h7 (estado)
+	(let (
+		  (tabuleiro (estado-tabuleiro estado))
+		  (lista-alturas '())
+		  (pesos '(512 256 128 64 32 16 8 4 2 0))
+		  (resultado 0)
+		 )
+		 
+		 (dotimes (collumn NUM-COLLUMNS)
+			(setf lista-alturas (cons (tabuleiro-altura-coluna tabuleiro collumn) lista-alturas))
+		 )
+		
+		
+		(dolist (elem lista-alturas)
+			(setf resultado 
+				(+ resultado (* elem (first pesos)))
+			)
+			(setf pesos (rest pesos))
+		)
+		
+		resultado
+		
+		
+	)
+)
+
+;;#####################################################         
+;;#################### PROCURA BEST ###################
+;;#####################################################
+;; 
+;;#####################################################
+;; Parameters:
+;; 
+;; TABULEIRO
+;; -tabuleiro inicial do jogo.
+;; 
+;; PECAS-POR-COLOCAR
+;; -pecas inicialmente por colocar
+;;
+;;##################################################
+;;
+;; Devolve uma lista com todas as accoes efectuadas
+;; desde o estado inicial ate ao estado objectivo.
+;;
+
+;;temporario
+(defvar pecas-por-colocar '(i i i))
+(defvar tabuleiro (cria-tabuleiro))
+(defvar estado-init (make-estado :tabuleiro tabuleiro :pecas-por-colocar pecas-por-colocar))
+;; (executa-jogadas estado-init (procura-best tabuleiro pecas-por-colocar))
+
+
+
+(defun procura-best (tabuleiro pecas-por-colocar)
+	(let ((estado-inicial (make-estado :tabuleiro tabuleiro :pecas-por-colocar pecas-por-colocar))
+;; 		  (heuristica #'(lambda (x) 0))
+		  (problema)
+		)
+		
+		(setf problema (make-problema :estado-inicial estado-inicial :solucao #'solucao :accoes #'accoes :resultado #'resultado :custo-caminho #'custo-oportunidade))
+	
+		(procura-A* problema #'heuristica-h3)
+	)
+)
+
+
+
 
 
 ;; ###########################################
 ;; (load (compile-file "utils.lisp"))
-;; (load (compile-file "rbfs.lisp"))
 (load "utils.fas") 
 ;  ###########################################
