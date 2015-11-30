@@ -1073,7 +1073,6 @@
 			(loop do ;;---------------------------------------------------- ciclo principal
 			
 				(when (stack-empty-p stack-estados) ;;--------------------- se encontrar a stack vazia, nao existe solucao.
-;; 					(setf caminho-resultado nil) ;;------------------------ poe o resultado a nulo
 					(return-from procura-pp nil) ;;----------------------------- sai do ciclo
 				) 
 				
@@ -1288,8 +1287,7 @@
 			
 			(loop do ;;---------------------------------------------------- ciclo principal
 				(when (stack-empty-p stack-estados) ;;--------------------- se encontrar a stack vazia, nao existe solucao.
-					(setf caminho-resultado nil) ;;------------------------ poe o resultado a nulo
-					(return-from main-loop) ;;----------------------------- sai do ciclo
+					(return-from procura-A* nil) ;;------------------------ sai do ciclo
 				) 
 				
 				
@@ -1362,10 +1360,65 @@
 ;;#####################################################
 
 ;; HEURISTICA0: heuristica fraca e experimental. 
-;; Retorna as pecas por colocar.
+;; Retorna o numero de pecas por colocar.
 (defun heuristica0 (estado)
 	(length (estado-pecas-por-colocar estado))
 )
+
+;; HEURISTICA-H1: numero de 'buracos' (espacos 
+;; abertos por baixo de espaços preenchidos).
+(defun heuristica-h1 (estado)
+	(let (
+			(tabuleiro (estado-tabuleiro estado))
+			(height-curr-collumn 0)
+			(num-holes 0)
+		 )
+		 
+		(dotimes (collumn NUM-COLLUMNS)
+			
+			(setf height-curr-collumn (tabuleiro-altura-coluna tabuleiro collumn))
+			
+			
+			(loop for line from 0 to (- height-curr-collumn 2) do
+				(when (= (aref tabuleiro line collumn) 0)
+					(incf num-holes)
+				)
+			)
+		)
+
+	num-holes
+	)
+)
+ 
+
+;; HEURISTICA-H2: numero de blocos da coluna com 
+;; maior numero de blocos.
+(defun heuristica-h2 (estado)
+	(let ((max-num-blocks 0)
+		  (num-blocks-curr-collumn 0)
+		  (tabuleiro (estado-tabuleiro estado))
+		 )
+	
+		(dotimes (collumn NUM-COLLUMNS)
+			
+			(setf num-blocks-curr-collumn 0)
+			
+			(dotimes (line NUM-LINES)
+				(when (= (aref tabuleiro line collumn) POSITION-FILLED)
+					  (incf num-blocks-curr-collumn)
+				)
+			)
+			
+			(when (> num-blocks-curr-collumn max-num-blocks)
+				  (setf max-num-blocks num-blocks-curr-collumn)
+			)
+			
+		)
+		
+		max-num-blocks
+	
+	)
+)	
 
 ;; HEURISTICA-H3: media das alturas das colunas.
 (defun heuristica-h3 (estado)
@@ -1433,7 +1486,7 @@
 (defvar pecas-por-colocar '(i i i))
 (defvar tabuleiro (cria-tabuleiro))
 (defvar estado-init (make-estado :tabuleiro tabuleiro :pecas-por-colocar pecas-por-colocar))
-;; (executa-jogadas estado-init (procura-best tabuleiro pecas-por-colocar))
+;; (executa-jogadas estado-init (procura-best tabuleiro pecas-por-colocar));;
 
 
 
@@ -1445,7 +1498,7 @@
 		
 		(setf problema (make-problema :estado-inicial estado-inicial :solucao #'solucao :accoes #'accoes :resultado #'resultado :custo-caminho #'custo-oportunidade))
 	
-		(procura-A* problema #'heuristica-h3)
+		(procura-A* problema #'heuristica0)
 	)
 )
 
@@ -1454,6 +1507,6 @@
 
 
 ;; ###########################################
-;; (load (compile-file "utils.lisp"))
-(load "utils.fas") 
+(load (compile-file "utils.lisp"))
+;; (load "utils.fas") 
 ;  ###########################################
