@@ -169,8 +169,7 @@
 ;; PIECE-MAX-POINTS
 ;; Receives a PECA and returns the maximum amount of points 
 ;; possible for that PECA.
-;; 
-;;
+;; TESTADO
 (defun piece-max-points (peca)
 	(cond ((eq peca I-SYMBOL) I-MAX-POINTS)
 		((eq peca L-SYMBOL) L-MAX-POINTS)
@@ -187,8 +186,9 @@
 ;;#######################################################          
 ;;##################### TIPO ACCAO ######################
 ;;#######################################################
-;; COLUNA: collumn number of leftmost(mais a esquerda)
-;; position of piece.
+;; Pair (COLUNA . PECA)
+;; 
+;; COLUNA: collumn number of leftmost position of piece.
 ;; 
 ;; PECA: 2D array with piece configuration.
 ;; 		ex: ((T T)(T nil)(T nil))
@@ -240,7 +240,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; COPIA-TABULEIRO
-;; Returns a copy of 'tabuleiro'
+;; Returns a copy of TABULEIRO.
 ;; TESTADO
 (defun copia-tabuleiro (tabuleiro)
   (let ((tabuleiro-novo (make-array (list NUM-LINES NUM-COLLUMNS) :initial-element POSITION-EMPTY) ))
@@ -261,7 +261,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; TABULEIRO-PREENCHIDO-P
 ;; Returns true if position (num-linha, num-coluna) 
-;; of 'tabuleiro' is filled.
+;; of TABULEIRO is filled.
 ;; TESTADO
 (defun tabuleiro-preenchido-p ( tabuleiro num-linha num-coluna)
   (eq (aref tabuleiro num-linha num-coluna) POSITION-FILLED)
@@ -298,12 +298,12 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; TABULEIRO-COLOCA-PECA!
-;; Places a ACCAO (num-coluna, peca) in the tabuleiro. 
+;; Places a tetris piece in the tabuleiro. 
 ;; In other words, applies an ACCAO to the TABULEIRO.
 ;; PARECE FUNCIONAR BEM
 (defun tabuleiro-coloca-peca! (tabuleiro accao)
 	(let ((coluna-inicial (accao-coluna accao)) (peca (accao-peca accao)) (tab-floor 0) )
-		(block conditions
+		(block find-floor
 			(dotimes (collumn (array-dimension peca 1))
 				
 				(when (> (tabuleiro-altura-coluna tabuleiro (+ coluna-inicial collumn)) tab-floor)
@@ -311,8 +311,7 @@
 					
 					
 					(setf tab-floor (- (tabuleiro-altura-coluna tabuleiro (+ coluna-inicial collumn)) (piece-height-collumn peca collumn)))
-					
-;; 					(when (= (tabuleiro-altura-coluna tabuleiro (+ coluna-inicial collumn)))
+
 
 				)
 			)
@@ -339,14 +338,10 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; TABULEIRO-ALTURA-COLUNA
 ;; Returns the value of the highest filled position of 
-;; 'tabuleiro'.
+;; TABULEIRO.
 ;; TESTADO
 (defun tabuleiro-altura-coluna ( tabuleiro num-coluna)
 	(let ((max-altura 0))
-	
-;; 		(when (eq (aref tabuleiro 0 num-coluna) POSITION-EMPTY)
-;; 			(return-from tabuleiro-altura-coluna 0)
-;; 		)
 	
 		(dotimes (line NUM-LINES)
 			(when (eq (aref tabuleiro line num-coluna) POSITION-FILLED)
@@ -389,7 +384,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; TABULEIRO-PREENCHE!
-;; Fills position given by (num-linha, num-coluna)
+;; Fills position given by (num-linha, num-coluna) of TABULEIRO.
 ;; TESTADO
 (defun tabuleiro-preenche! (tabuleiro num-linha num-coluna)
 	(if (and (>= num-linha 0) (< num-linha 18) (>= num-coluna 0) (< num-coluna 10))  
@@ -428,7 +423,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; TABULEIRO-LINHA-PREENCHIDA-P
-;; Returns true if any position in given line is filled.
+;; Returns true if any position in given LINE is filled.
 ;; TESTADO
 (defun tabuleiro-linha-preenchida-p (tabuleiro line) 
 	(let ((result nil))
@@ -450,7 +445,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; TABULEIROS-IGUAIS-P
-;; Returns true if both 'tabuleiro' parameters are equal.
+;; Returns true if both boards are equal.
 ;; TESTADO
 (defun tabuleiros-iguais-p (tab1 tab2)
 	(let ((result t))
@@ -485,8 +480,8 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; TABULEIRO-REMOVE-LINHA!
-;; Receives a 'tabuleiro' and a line number, and clears that 
-;; line. Each lines above will drop down to the line directly
+;; Receives a TABULEIRO and a line number, and clears that 
+;; line. Each line above will drop down to the line directly
 ;; below it.
 ;; TESTADO
 (defun tabuleiro-remove-linha! (tabuleiro initial-line)
@@ -509,7 +504,9 @@
 						)
 					)
 					(incf line)
-				while (< line NUM-LINES #|tabuleiro-linha-preenchida-p tabuleiro line|#))
+				
+					while (< line NUM-LINES )
+				)
 				
 				t
 				
@@ -525,8 +522,8 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; TABULEIRO-ARRAY
-;; Receives an array filled with 1's and 0's.
-;; Returns an array with positions filled with 'true' and 'nil'
+;; Receives board as an array filled with 1's and 0's.
+;; Returns board as an array with positions filled with 'true' and 'nil'.
 ;; TESTADO
 (defun tabuleiro->array (tabuleiro) 
 	(let ((result (make-array (list NUM-LINES NUM-COLLUMNS) :initial-element nil)))
@@ -545,8 +542,8 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; TABULEIRO-ARRAY
-;; Receives an array filled with logic values.
-;; Returns an array with positions filled with 1's and 0's.
+;; Receives board as an array filled with logic values.
+;; Returns board as an array with positions filled with 1's and 0's.
 ;; TESTADO
 (defun array->tabuleiro(array-log)
 	(let ((result (make-array (list NUM-LINES NUM-COLLUMNS) :initial-element 0)))
@@ -570,23 +567,21 @@
 ;;################### TIPO ESTADO ###################
 ;;###################################################
 ;; Type ESTADO, describes the state of one game 
-;; (one 'tabuleiro')
 ;;
 ;; PONTOS: number of points obtained so far.
 ;; 
 ;; PECAS-POR-COLOCAR: list of pieces not placed in 
-;; their final position yet, known when ESTADO is 
-;; created.
+;; their final position yet.
 ;;
 ;; PECAS-COLOCADAS: list of pieces already placed 
 ;; at the bottom of TABULEIRO.
 ;;
 ;; TABULEIRO: the game table, of type 'tabuleiro'.
 (defstruct estado 
-			(pontos 0) ;;-----------------------inteiro
-			(pecas-por-colocar  '());;----------lista
-			(pecas-colocadas '());;-------------lista
-			(tabuleiro (cria-tabuleiro));;------tipo tabuleiro
+			(pontos 0) ;;-----------------------integer
+			(pecas-por-colocar  '());;----------list
+			(pecas-colocadas '());;-------------list
+			(tabuleiro (cria-tabuleiro));;------board(tabuleiro)
 )
 
 
@@ -607,31 +602,15 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; ESTADO-PECA-ADICIONA!
-;; Adds a piece to the 'pecas-por-colocar' list.
-;; TESTADO
-(defun estado-peca-adiciona! (estado peca)
-	(append (estado-pecas-por-colocar estado) (list peca))
-)
-
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; ESTADO-PECA-COLOCADA-ADICIONA!
-;; Adds a piece to the 'pecas-colocadas' list.
-;; TESTADO
-(defun estado-peca-colocada-adiciona! (estado peca)
-	(append (estado-pecas-colocadas estado) (list peca))
-)
-
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; ESTADO-FINAL-P
-;; Returns true if ESTADO is an objective state:
+;; Returns true if ESTADO is an objective state.
+;; 
+;; Is an objective state if:
 ;; 	- Atlest one position of top line of TABULEIRO is 
 ;; 	filled;
+;;  			OR
 ;; 	- List of PECAS-POR-COLOCAR is empty.
+;;
 ;; TESTADO
 (defun estado-final-p (est)
 	(let ((result t))
@@ -659,7 +638,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; ESTADOS-IGUAIS-P
-;; Returns true if both ESTADO objects are equal.
+;; Returns true if the content of both state objects is the same.
 ;; TESTADO
 (defun estados-iguais-p (est1 est2)
 	(let ((result t))
@@ -709,7 +688,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; COPIA-ESTADO
-;; Copies a ESTADO.
+;; Copies a state.
 ;; TESTADO
 (defun copia-estado (estado)
 	(let ((result (make-estado)))
@@ -732,11 +711,11 @@
 ;;################# TIPO PROBLEMA #################
 ;;#################################################
 (defstruct problema 
-			estado-inicial 
-			solucao 
-			accoes 
-			resultado 
-			custo-caminho
+			estado-inicial ;;------ type ESTADO
+			solucao ;;------------- function
+			accoes ;;-------------- function
+			resultado ;;----------- function
+			custo-caminho ;;------- function
 )
 
 
@@ -750,12 +729,12 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; SOLUCAO
-;; Receives a ESTADO and returns true if it is a solution.
+;; Receives a object of type ESTADO and returns true if it is a solution.
 ;; 
 ;; is_solution => not(tabuleiro-topo-preenchido-p) 
 ;; 			&& empty(pecas-por-colocar)
 ;; 
-;; SEEMS TO BE WORKING
+;;TESTADO
 (defun solucao (estado)
 	(let ((result t))
 		(block condition-block
@@ -790,7 +769,6 @@
 (defun accoes (estado)
 	(let ((result) (configurations))
 	
-;; 		(block body
 			(when (estado-final-p estado)
 				(return-from accoes nil)
 			)
@@ -801,12 +779,10 @@
 				(loop for collumn from 0 to  (1- NUM-COLLUMNS) do
 					(when (>= NUM-COLLUMNS (+ collumn (piece-width elem)))
 						(setf result (append result (list (cria-accao collumn elem))))
-;; 						(print (cria-accao collumn elem))
 					)
 				)
 			)
 			result
-;; 		)
 	)
 )
 
@@ -817,7 +793,7 @@
 ;; Receives a ESTADO and an ACCAO and returns a new ESTADO 
 ;; resulting of applying parameter ACCAO to parameter ESTADO. 
 ;; 
-;; 
+;; TESTADO
 (defun resultado (estado accao)
 	(let ((result (make-estado)) (tabuleiro (copia-tabuleiro (estado-tabuleiro estado))) (lines-removed 0) (awarded-points 0))
 		(setf (estado-pecas-por-colocar result) (rest (estado-pecas-por-colocar estado)))
@@ -861,7 +837,6 @@
 ;; QUALIDADE
 ;; Receives a ESTADO and returns an integer corresponding to 
 ;; the number of points in ESTADO multiplied by -1. 
-;; Default heuristic function.
 ;;
 (defun qualidade (estado)
 	(* -1 (estado-pontos estado))
@@ -899,7 +874,7 @@
 ;;#################################################################################################
 ;;#################################################################################################
 
-;; Algoritmos da segunda entrega : DFS (procura-pp), A* e RBFS (recursive best first)
+;; Algoritmos da segunda entrega : DFS (procura-pp), A*.
 ;; Estruturas de dados adicionais.
 
 
@@ -913,8 +888,8 @@
 ;; - THIS: the stack itself. A list that contains the
 ;;   the elements of the stack.
 ;; 
-;; - POINTER: an integer that points to the top of 
-;; the stack.
+;; - POINTER: an integer representing the number of 
+;; elements on the stack.
 ;;
 (defstruct stack 
 				(this '())
@@ -985,20 +960,6 @@
 )
 
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; CREATE-STACK-FROM-LIST
-;; Returns a stack containing the elements of a given list.
-;;
-(defun create-stack-from-list (lst)
-	(let ((result (create-stack)))
-		(setf (stack-this result) lst)
-		(setf (stack-pointer result) (list-length lst))
-		
-		result
-	)
-)
-
 ;;#####################################################         
 ;;##################### ALGORITHM #####################
 ;;#####################################################
@@ -1051,11 +1012,11 @@
 		  (estado-actual) ;;----------------------------------------------- estado a ser explorado na iteracao actual.
 										                                  
 		  (lista-accoes-estado-actual ) ;;---------------------------------  lista temporario para guardar todos as accoes 
-																		  ;; possiveis de efectuar sobre um estado.
-																		  ;; (retorno da funcao ACCOES(estado))
+										;; possiveis de efectuar sobre um estado.
+										;; (retorno da funcao ACCOES(estado))
 					
 		  (mapa-estado-accao (make-hash-table)) ;;------------------------- hash table que mapeia um estado a accao que levou a ele
-		  (mapa-estado-antecessor (make-hash-table))
+		  (mapa-estado-antecessor (make-hash-table)) ;;-------------------- hash table que mapeia um estado ao seu antecessor
 	
 		  (estado-resultado)			
 					
@@ -1144,10 +1105,12 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; STACK-ORDERED-PUSH!
 ;; Pushes ELEM onto the stack. Insertion order is:
-;; 	- lowest value of VALUE at head of stack.
-;; 	- highues value of VALUE at the end.
+;; 	- lowest value at head of stack.
+;; 	- highues value at the end.
 ;;
 ;;  Values are determined by [custo(elem) + heuristica(elem)]
+;; 
+;; Runs in O(n) time.
 ;;
 (defun stack-ordered-push! (stack elem custo heuristica)
 	(let ((new-elem-value (+ (funcall custo elem) (funcall heuristica elem)))
@@ -1266,11 +1229,11 @@
 		  (estado-actual) ;;----------------------------------------------- estado a ser explorado na iteracao actual.
 										                                  
 		  (lista-accoes-estado-actual ) ;;---------------------------------  lista temporario para guardar todos as accoes 
-																		  ;; possiveis de efectuar sobre um estado.
-																		  ;; (retorno da funcao ACCOES(estado))
+										;; possiveis de efectuar sobre um estado.
+										;; (retorno da funcao ACCOES(estado))
 					
 		  (mapa-estado-accao (make-hash-table)) ;;------------------------- hash table que mapeia a um estado a accao que levou a ele
-		  (mapa-estado-antecessor (make-hash-table))
+		  (mapa-estado-antecessor (make-hash-table)) ;;-------------------- hash table que mapeia um estado ao seu antecessor
 	
 		  (estado-resultado)			
 					
@@ -1349,7 +1312,7 @@
 	
 		
 		caminho-resultado ;;----------------------------------------------- retorna o caminho obtido.
-																		 ;; nil caso nao tenho encontrado solucao. 
+						  ;; nil caso nao tenho encontrado solucao. 
 	)
 )
 
@@ -1366,7 +1329,7 @@
 )
 
 ;; HEURISTICA-H1: numero de 'buracos' (espacos 
-;; abertos por baixo de espaços preenchidos).
+;; abertos por baixo de espacos preenchidos).
 (defun heuristica-h1 (estado)
 	(let (
 			(tabuleiro (estado-tabuleiro estado))
@@ -1436,12 +1399,13 @@
 )
 
 ;; HEURISTICA-H7: soma pesada das alturas das colunas.
-;; testado
+;; testado, de maneira a que as colunas centrais sao 
+;; mais pesadas.
 (defun heuristica-h7 (estado)
 	(let (
 		  (tabuleiro (estado-tabuleiro estado))
 		  (lista-alturas '())
-		  (pesos '(512 256 128 64 32 16 8 4 2 0))
+		  (pesos '(0 2 4 8 16 16 8 4 2 0))
 		  (resultado 0)
 		 )
 		 
@@ -1482,23 +1446,14 @@
 ;; desde o estado inicial ate ao estado objectivo.
 ;;
 
-;;temporario
-(defvar pecas-por-colocar '(i i i))
-(defvar tabuleiro (cria-tabuleiro))
-(defvar estado-init (make-estado :tabuleiro tabuleiro :pecas-por-colocar pecas-por-colocar))
-;; (executa-jogadas estado-init (procura-best tabuleiro pecas-por-colocar));;
-
-
-
 (defun procura-best (tabuleiro pecas-por-colocar)
-	(let ((estado-inicial (make-estado :tabuleiro tabuleiro :pecas-por-colocar pecas-por-colocar))
-;; 		  (heuristica #'(lambda (x) 0))
+	(let ((estado-inicial (make-estado :tabuleiro (array->tabuleiro tabuleiro) :pecas-por-colocar pecas-por-colocar))
 		  (problema)
 		)
 		
-		(setf problema (make-problema :estado-inicial estado-inicial :solucao #'solucao :accoes #'accoes :resultado #'resultado :custo-caminho #'custo-oportunidade))
+		(setf problema (make-problema :estado-inicial estado-inicial :solucao #'solucao :accoes #'accoes :resultado #'resultado :custo-caminho #'qualidade))
 	
-		(procura-A* problema #'heuristica0)
+		(procura-A* problema #'heuristica-h1)
 	)
 )
 
@@ -1507,6 +1462,6 @@
 
 
 ;; ###########################################
-(load (compile-file "utils.lisp"))
-;; (load "utils.fas") 
+;; (load (compile-file "utils.lisp"))
+(load "utils.fas") 
 ;  ###########################################
